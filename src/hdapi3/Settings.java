@@ -46,7 +46,7 @@ public class Settings extends Properties{
 	{
 		if (g_instance == null) {
 			try {
-				URL url = ClassLoader.getSystemResource(CONFIG_NAME);
+				URL url = ClassLoader.getSystemResource(CONFIG_NAME);				
 				g_instance = new Settings();
 				if (url == null) {
 					return false;
