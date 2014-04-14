@@ -1,0 +1,5 @@
+.svn
+.settings
+files
+.DS_store
+hdapi_config.properties
