@@ -1,5 +1,5 @@
 .svn
 .settings
-files
+files/
 .DS_store
 hdapi_config.properties
