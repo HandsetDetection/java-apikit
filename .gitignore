@@ -3,3 +3,6 @@
 .svn
 .settings
 hdapi_config.properties
+hdapi_config.properties
+settings/*
+settings
