@@ -68,7 +68,7 @@ public class HD3 {
 	
 	public HD3() {
 		this.realm = "APIv3";
-		this.username = Settings.getUsername();
+		this.username = Settings.getUsername();		
 		this.secret = Settings.getSecret();
 		this.useLocal = Settings.isUseLocal();
 		this.apiServer = Settings.getApiServer();
