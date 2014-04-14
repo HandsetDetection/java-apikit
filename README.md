@@ -11,3 +11,4 @@ Handset Detection is a service that lets you Detect Mobile Browsers. Our Databas
 * A config file.
 
 
+
