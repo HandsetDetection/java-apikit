@@ -1,0 +1,120 @@
+***************
+*** 60,65 ****
+  	private int proxyPort;
+  	private String proxyUsername;
+  	private String proxyPassword;
+  
+  	private JsonObject m_detectRequest;
+  	private JsonObject m_reply;
+--- 60,67 ----
+  	private int proxyPort;
+  	private String proxyUsername;
+  	private String proxyPassword;
++ 	
++ 	private String localFilesDirectory;
+  
+  	private JsonObject m_detectRequest;
+  	private JsonObject m_reply;
+***************
+*** 89,94 ****
+  		this.proxyPort = Settings.getProxyPort();
+  		this.proxyUsername = Settings.getProxyUsername();
+  		this.proxyPassword = Settings.getProxyPassword();
+  		this.m_cache = new Cache();
+  	}
+  
+--- 91,99 ----
+  		this.proxyPort = Settings.getProxyPort();
+  		this.proxyUsername = Settings.getProxyUsername();
+  		this.proxyPassword = Settings.getProxyPassword();
++ 		
++ 		this.localFilesDirectory = Settings.getLocalFilesDirectory();
++ 		
+  		this.m_cache = new Cache();
+  	}
+  
+***************
+*** 365,371 ****
+  		if (!validateReply()) return false;
+  			
+  		try {
+- 			status = HD3Util.saveBytesAsFile(JsonContants.LOCAL_TREES_FILENAME, this.m_rawReply);
+  		} catch (Exception e) {
+  			this.createErrorReply(299, "Failed to save trees file.");
+  			setError("Error 299. Message: failed to save fetched trees due to " + e.getMessage());
+--- 370,376 ----
+  		if (!validateReply()) return false;
+  			
+  		try {
++ 			status = HD3Util.saveBytesAsFile(new File(localFilesDirectory, JsonContants.LOCAL_TREES_FILENAME), this.m_rawReply);
+  		} catch (Exception e) {
+  			this.createErrorReply(299, "Failed to save trees file.");
+  			setError("Error 299. Message: failed to save fetched trees due to " + e.getMessage());
+***************
+*** 381,387 ****
+  		if (!status) return false;
+  		if (!validateReply()) return false;
+  		try {
+- 			status = HD3Util.saveBytesAsFile(JsonContants.LOCAL_SPECS_FILENAME, this.m_rawReply);
+  		} catch (Exception e) {
+  			this.createErrorReply(299, "Failed to save specs file.");
+  			setError("Error 299. Message: failed to save fetched trees due to " + e.getMessage());
+--- 386,392 ----
+  		if (!status) return false;
+  		if (!validateReply()) return false;
+  		try {
++ 			status = HD3Util.saveBytesAsFile(new File(localFilesDirectory, JsonContants.LOCAL_SPECS_FILENAME), this.m_rawReply);
+  		} catch (Exception e) {
+  			this.createErrorReply(299, "Failed to save specs file.");
+  			setError("Error 299. Message: failed to save fetched trees due to " + e.getMessage());
+***************
+*** 410,416 ****
+  	}
+  	
+  	private boolean setCacheTrees() {
+- 		File f = new File(JsonContants.LOCAL_TREES_FILENAME);
+  		if (f.exists()) {
+  			FileInputStream fis = null;
+  			try {
+--- 415,421 ----
+  	}
+  	
+  	private boolean setCacheTrees() {
++ 		File f = new File(localFilesDirectory, JsonContants.LOCAL_TREES_FILENAME);
+  		if (f.exists()) {
+  			FileInputStream fis = null;
+  			try {
+***************
+*** 539,545 ****
+  			}
+  	
+  	private JsonObject setCacheSpecs(String id, String type) {
+- 		File f = new File(JsonContants.LOCAL_SPECS_FILENAME);
+  		JsonObject returnedSpecs = null;
+  		if (f.exists()) {
+  			FileInputStream fis = null;
+--- 544,550 ----
+  			}
+  	
+  	private JsonObject setCacheSpecs(String id, String type) {
++ 		File f = new File(localFilesDirectory, JsonContants.LOCAL_SPECS_FILENAME);
+  		JsonObject returnedSpecs = null;
+  		if (f.exists()) {
+  			FileInputStream fis = null;
+***************
+*** 998,1004 ****
+  		JsonObject ret = null;
+  		FileInputStream fis = null;
+  		try {
+- 			fis = new FileInputStream(JsonContants.LOCAL_SPECS_FILENAME);
+  			JsonParser parser = new JsonParser();
+  			JsonElement data = parser.parse(new InputStreamReader(fis));
+  			if (data == null || data.isJsonNull() || !data.isJsonObject()) {
+--- 1003,1009 ----
+  		JsonObject ret = null;
+  		FileInputStream fis = null;
+  		try {
++ 			fis = new FileInputStream(new File(localFilesDirectory, JsonContants.LOCAL_SPECS_FILENAME));
+  			JsonParser parser = new JsonParser();
+  			JsonElement data = parser.parse(new InputStreamReader(fis));
+  			if (data == null || data.isJsonNull() || !data.isJsonObject()) {
