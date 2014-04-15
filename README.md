@@ -1,6 +1,6 @@
 # Handset Detection
 
-Handset Detection is a service that lets you Detect Mobile Browsers. Our Database has over 50,000 handsets and growig at 60 to 80 new handsets per day. This is particularly useful if you want to target the ever growing number mobile users. API Features click to call string, send sms string, device properties and geolocation information (carrier/ISP, country, longitude latitude).
+Handset Detection is a service that lets you Detect Mobile Browsers. Our Database has over 50,000 handsets and growig at 60 to 80 new handsets per day. This is particularly useful if you want to target the ever growing number mobile users. 
 
 ## Whats new in Java-API-Kit Version 3.4?
 * Supports stand alone as well as web service device detection.
