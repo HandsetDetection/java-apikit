@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -15,6 +16,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +29,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+
 import org.apache.commons.codec.binary.Base64;
 
 import com.google.gson.JsonArray;
@@ -406,7 +410,7 @@ public class HD3 {
 		} catch (Exception e) {
 			this.createErrorReply(299, "Failed to download archive.", e.getMessage());
 			return false;
-		}
+		}	
 
 		// Unzip ultimate.zip file.
 		// Based on : http://www.justexample.com/wp/unzip-zip-file-using-java/		
@@ -414,10 +418,9 @@ public class HD3 {
 			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
 			ZipEntry ze = zis.getNextEntry();
 	        while (ze != null) {
-	        	String entryName = ze.getName();
+	        	String entryName = ze.getName().replace(':', '_');
 	            //g_logger.warning("Extracting " + entryName + " -> " + localFilesDirectory + File.separator +  entryName + "...");
-	            File f;
-	            f = new File(this.localFilesDirectory, entryName);
+	            File f = new File(this.localFilesDirectory, entryName);	            
 		        // Create folders needed to store in correct relative path.
 	            f.getParentFile().mkdirs();
 	            FileOutputStream fos = new FileOutputStream(f);
@@ -434,7 +437,7 @@ public class HD3 {
 		} catch (Exception e) {
 			this.createErrorReply(299, "Failed to unzip archive.", e.getMessage());
 			return false;
-		}
+		} 
 		g_logger.warning("Done");
 		return true;
 	}
@@ -1056,7 +1059,7 @@ public class HD3 {
 			} else {
 				g_logger.severe(hd3.getError());
 			}
-
+				
 			if (hd3.deviceView("Nokia", "660")) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
@@ -1091,12 +1094,12 @@ public class HD3 {
 			} else {
 				g_logger.severe(hd3.getError());
 			}
-
-			if (hd3.siteFetchArchive()) {
+			
+			/*if (hd3.siteFetchArchive()) {
 				g_logger.fine("archive fetched.");
 			} else {
 				g_logger.severe(hd3.getError());
-			}
+			} */
 
 		} catch (Exception ie) {
 			ie.printStackTrace();

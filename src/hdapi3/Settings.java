@@ -1,5 +1,6 @@
 package hdapi3;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -41,17 +42,21 @@ public class Settings extends Properties{
 	 * Load setting from default classpath root.
 	 * @return
 	 * @throws IOException
+	 * @throws ClassNotFoundException 
 	 */
-	public synchronized static boolean init() throws IOException
+	public synchronized static boolean init() throws IOException, Exception
 	{
 		if (g_instance == null) {
 			try {
-				URL url = ClassLoader.getSystemResource(CONFIG_NAME);				
-				g_instance = new Settings();
+				File config_file = new File(CONFIG_NAME);
+				URL url = config_file.toURL(); //ClassLoader.getSystemResource(CONFIG_NAME);		
+				System.out.println(url);
+				g_instance = new Settings();				
 				if (url == null) {
 					return false;
 				}
 				g_instance.load(url.openStream());
+				//System.out.println(g_instance);
 			} catch (IOException ie) {
 				throw ie;
 			}
