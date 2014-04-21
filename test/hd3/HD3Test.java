@@ -1,25 +1,39 @@
 package hd3;
 
-import static org.junit.Assert.*;
+import java.io.FileInputStream;
+import junit.framework.TestCase;
+import hdapi3.HD3;
+import hdapi3.Settings;
 
 import org.junit.Test;
 
-public class HD3Test {
-
+public class HD3Test extends TestCase {
+	
+	HD3 hd3;
+	
+	/*
+	 * (non-Javadoc)
+	 * @see junit.framework.TestCase#setUp()
+	 * Description: This will run first before any other test methods.
+	 */
+	protected void setUp() {		
+		try {
+			FileInputStream fis = new FileInputStream("hdapi_config.properties");
+			Settings.init(fis);
+			fis.close();
+			hd3 = new HD3();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 		
+	}
+	
+	/*
+	 * Test our constructor
+	 */
 	@Test
 	public void testHD3() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetup() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetupMapOfStringStringStringString() {
-		fail("Not yet implemented");
-	}
+		assertEquals("203a2c5495", hd3.getUsername());
+	}	
 
 	@Test
 	public void testDeviceVendors() {
@@ -283,11 +297,6 @@ public class HD3Test {
 
 	@Test
 	public void testSetNonMobile() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testMain() {
 		fail("Not yet implemented");
 	}
 

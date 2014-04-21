@@ -50,7 +50,7 @@ public class Settings extends Properties{
 			try {
 				File config_file = new File(CONFIG_NAME);
 				URL url = config_file.toURL(); //ClassLoader.getSystemResource(CONFIG_NAME);		
-				System.out.println(url);
+				//System.out.println(url);
 				g_instance = new Settings();				
 				if (url == null) {
 					return false;
