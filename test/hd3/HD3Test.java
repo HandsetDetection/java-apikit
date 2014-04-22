@@ -1,11 +1,16 @@
 package hd3;
 
 import java.io.FileInputStream;
+
 import junit.framework.TestCase;
 import hdapi3.HD3;
+import hdapi3.HD3Util;
 import hdapi3.Settings;
 
 import org.junit.Test;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 public class HD3Test extends TestCase {
 	
@@ -20,6 +25,7 @@ public class HD3Test extends TestCase {
 		try {
 			FileInputStream fis = new FileInputStream("hdapi_config.properties");
 			Settings.init(fis);
+			Settings.isUseLocal();
 			fis.close();
 			hd3 = new HD3();
 		} catch (Exception e) {
@@ -32,29 +38,65 @@ public class HD3Test extends TestCase {
 	 */
 	@Test
 	public void testHD3() {
-		assertEquals("203a2c5495", hd3.getUsername());
+		assertEquals(hd3.getUsername(), "11111111");		// Fail
+		assertEquals(hd3.getUsername(), "203a2c5495");		// Pass		
 	}	
 
 	@Test
 	public void testDeviceVendors() {
-		fail("Not yet implemented");
+		assertTrue(hd3.isUseLocal());	// This will fail; we set our local=false
+		
+		// Set it to False; Fail
+		assertFalse(hd3.isUseLocal());
 	}
 
 	@Test
 	public void testDeviceModels() {
-		fail("Not yet implemented");
+		assertTrue(hd3.isUseLocal());
+		
+		assertFalse(hd3.isUseLocal());		
+		hd3.deviceModels("Nokia");
+		JsonObject rootobj = hd3.getReply();
+		assertEquals(rootobj.get("model").getAsJsonArray().get(0).getAsString(), "100");
 	}
+
 
 	@Test
 	public void testDeviceView() {
-		fail("Not yet implemented");
+		assertFalse(hd3.isUseLocal());
+		
+		// Set Nokia as our device; general_mode: 660
+		hd3.deviceView("Nokia", "660");	
+		assertEquals(HD3Util.get("general_model", hd3.getReply()).getAsString(), "660");
+		
+		// This will fail; We don't have 001 in our database			
+		assertEquals(HD3Util.get("general_model", hd3.getReply()).getAsString(), "001");
 	}
+
 
 	@Test
 	public void testDeviceWhatHas() {
-		fail("Not yet implemented");
+		assertFalse(hd3.isUseLocal());
+		
+		// Set Nokia as our device; Test success
+		hd3.deviceWhatHas("general_vendor", "Nokia");
+		JsonObject rootobj = hd3.getReply();
+		JsonElement elem = rootobj.get("devices").getAsJsonArray().get(0);	// First device id: 1353, model:100
+		String id = elem.getAsJsonObject().get("id").getAsString();
+		String model = elem.getAsJsonObject().get("general_model").getAsString();
+		assertEquals(id, "1353");   // compare id
+		assertEquals(model, "100");  // compare model
+		
+		
+		// Test fail
+		elem = rootobj.get("devices").getAsJsonArray().get(1);	// Second device id: 6110, model:1006
+		id = elem.getAsJsonObject().get("id").getAsString();
+		elem.getAsJsonObject().get("general_model").getAsString();
+		assertEquals(id, "10");		// 01 != 6110
+		assertEquals(model, "01");	// 10 != 1006
 	}
 
+/*	
 	@Test
 	public void testSiteAdd() {
 		fail("Not yet implemented");
@@ -299,5 +341,5 @@ public class HD3Test extends TestCase {
 	public void testSetNonMobile() {
 		fail("Not yet implemented");
 	}
-
+*/
 }

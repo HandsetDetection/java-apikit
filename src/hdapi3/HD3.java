@@ -126,7 +126,7 @@ public class HD3 {
 	}
 	
 	private boolean localDeviceVendors() {
-		JsonObject data = this.localGetSpecs();
+		JsonObject data = this.localGetSpecs();		
 		boolean ret = false;
 		if (data == null)
 			return ret;
@@ -157,7 +157,6 @@ public class HD3 {
 		} else {
 			this.createErrorReply(299, "Error: No devices data");
 		}
-		
 		return ret;				
 	}
 
@@ -800,8 +799,8 @@ public class HD3 {
 					}
 				} else {
 					this.setError("Error: No JsonObject in response.");
-				}
-			}
+				}				
+			}			
 		} finally {
 			try {
 				out.close();
@@ -815,7 +814,7 @@ public class HD3 {
 			} catch (Exception e) {
 				g_logger.warning(e.getMessage());
 			}
-		}
+		}	
 		return ret;
 	}
 
@@ -847,12 +846,11 @@ public class HD3 {
 			conn.setRequestProperty("Content-Type", "application/json");
 			conn.setRequestProperty("Content-Length",contentLength);
 			conn.setRequestProperty("Authorization", getAuthorizationHeader(newURL));
-			conn.setReadTimeout(getReadTimeout() * 1000);
-			
+			conn.setReadTimeout(getReadTimeout() * 1000);			
 			OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
 			if (! HD3Util.isNullOrEmpty(data)) {
 				writer.write(data);
-			}
+			}			
 			writer.flush();
 			writer.close();
 			InputStream is = conn.getInputStream();
@@ -860,11 +858,10 @@ public class HD3 {
 			byte[] b = new byte[1024];
 			while ((bLength = is.read(b)) != -1) {
 				response.write(b, 0, bLength);
-			}
+			}		
 			response.flush();
 			response.close();
 			is.close();
-
 			return ret = true;
 		} catch (Exception ex) {
 			g_logger.warning("Exception occured while trying to access " + ex.getLocalizedMessage());
@@ -1052,26 +1049,26 @@ public class HD3 {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			}
+			} 
 			
 			if (hd3.deviceModels("Nokia")) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
 			}
-				
+			
 			if (hd3.deviceView("Nokia", "660")) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			}
+			} 
 			
 		    if (hd3.deviceWhatHas("general_vendor", "Nokia")) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
 			}
-	    			
+	    /*			
 			hd3.addDetectVar("user-agent", "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95/12.0.013; Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413");
 			if (hd3.siteDetect()) {
 				g_logger.fine(hd3.getReply().toString());
