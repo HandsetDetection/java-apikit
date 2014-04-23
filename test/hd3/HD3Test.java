@@ -1,14 +1,11 @@
 package hd3;
 
 import java.io.FileInputStream;
-
 import junit.framework.TestCase;
 import hdapi3.HD3;
 import hdapi3.HD3Util;
 import hdapi3.Settings;
-
 import org.junit.Test;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -24,7 +21,7 @@ public class HD3Test extends TestCase {
 	protected void setUp() {		
 		try {
 			FileInputStream fis = new FileInputStream("hdapi_config.properties");
-			Settings.init(fis);
+			Settings.init(fis);		// common.use_local=false
 			Settings.isUseLocal();
 			fis.close();
 			hd3 = new HD3();
@@ -40,13 +37,15 @@ public class HD3Test extends TestCase {
 	public void testHD3() {
 		assertEquals(hd3.getUsername(), "11111111");		// Fail
 		assertEquals(hd3.getUsername(), "203a2c5495");		// Pass		
+		
+		//.....
 	}	
 
 	@Test
 	public void testDeviceVendors() {
 		assertTrue(hd3.isUseLocal());	// This will fail; we set our local=false
 		
-		// Set it to False; Fail
+		// Set it to False; Pass
 		assertFalse(hd3.isUseLocal());
 	}
 
@@ -94,27 +93,6 @@ public class HD3Test extends TestCase {
 		elem.getAsJsonObject().get("general_model").getAsString();
 		assertEquals(id, "10");		// 01 != 6110
 		assertEquals(model, "01");	// 10 != 1006
-	}
-
-/*	
-	@Test
-	public void testSiteAdd() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSiteEdit() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSiteView() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSiteDelete() {
-		fail("Not yet implemented");
 	}
 
 	@Test
@@ -341,5 +319,5 @@ public class HD3Test extends TestCase {
 	public void testSetNonMobile() {
 		fail("Not yet implemented");
 	}
-*/
+
 }

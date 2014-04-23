@@ -1,110 +1,34 @@
 package hd3;
 
-import static org.junit.Assert.*;
+import junit.framework.TestCase;
 import hdapi3.Settings;
-
 import org.junit.Test;
 
-public class SettingsTest {
+public class SettingsTest extends TestCase {
 
-	@Test
-	public void testInit() {
-		fail("Not yet implemented");
+	/*
+	 * Call first before every methods
+	 */
+	protected void setUp() {	
+		try {
+			Settings.init();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-
+			
 	@Test
-	public void testInitInputStream() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetLocalFilesDirectory() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testIsUseProxy() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetProxyAddress() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetProxyPort() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetProxyUsername() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetProxyPassword() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetUsername() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetSecret() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetSiteId() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetApiServer() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetLogServer() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetNonMobile() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetMatchFilter() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testIsUseLocal() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetConnectTimeout() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetReadTimeout() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetMobileSite() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testMain() {
-		fail("Not yet implemented");
+	public void testSettings() {
+		// Pass based on what is inside the file properties
+		assertEquals(Settings.getUsername(), "203a2c5495");
+		assertEquals(Settings.getSecret(), "4Mcy7r7wDFdCDbg2");
+		assertEquals(Settings.getSiteId(), "50538");
+		assertFalse(Settings.isUseLocal());
+		
+		// Test fail
+		assertEquals(Settings.getUsername(), "your_username");
+		assertTrue(Settings.isUseLocal());
+		
 	}
 
 }

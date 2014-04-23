@@ -5,10 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
@@ -16,7 +13,6 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +25,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64;
@@ -37,7 +32,6 @@ import org.apache.commons.codec.binary.Base64;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 public class HD3 {
 	private final static Logger g_logger = Logger.getLogger(HD3.class.getName());
@@ -464,14 +458,13 @@ public class HD3 {
 		valid = false;
 		for (Map.Entry<String,JsonElement> entry : m_detectRequest.entrySet()) {
 			if (! entry.getValue().isJsonNull()) {
-				header = entry.getValue().getAsString();
+				header = entry.getValue().getAsString();				
 				if (header != "" && validateUserAgent(header)) {
 					valid = true;
 					break;
 				}
-			}
-		}		
-		
+			}			
+		}				
 		if (valid == false) {
 			this.createErrorReply(301, "FastFail : Probable bot, spider or script");
 			return false;
@@ -479,7 +472,7 @@ public class HD3 {
 
 		if (isUseLocal()) {
 			//g_logger.fine("Starting local detecting with "+ m_detectRequest.toString());
-			boolean result = localSiteDetect();
+			boolean result = localSiteDetect();			
 			return result;
 		} else {
 			return remote("site/detect/" + id, this.m_detectRequest) 
@@ -502,7 +495,7 @@ public class HD3 {
 		JsonElement id = getDevice();
 		if (! HD3Util.isNullElement(id)) {
 			device = getCacheSpecs(id.getAsString(), JsonContants.DEVICE);
-			specs = (JsonObject) HD3Util.get("hd_specs", device);
+			specs = (JsonObject) HD3Util.get("hd_specs", device);			
 			if (specs == null) {
 				this.createErrorReply(299, "Malformed JSON Object Device:"+ id.toString());
 				return false;
@@ -799,7 +792,7 @@ public class HD3 {
 					}
 				} else {
 					this.setError("Error: No JsonObject in response.");
-				}				
+				}	
 			}			
 		} finally {
 			try {
@@ -1067,21 +1060,21 @@ public class HD3 {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			}
-	    /*			
+			} 
+	    			
 			hd3.addDetectVar("user-agent", "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95/12.0.013; Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413");
 			if (hd3.siteDetect()) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			}
+			} 
 			
 			hd3.addDetectVar("user-agent", "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95/12.0.013; Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413");
 			if (hd3.siteDetect()) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			}
+			} 
 			
 			hd3.addDetectVar("user-agent", "Opera/9.80 (Android; OperaMini/7.0.29952/28.2144; U; pt) Presto/2.8.119 Version/11.10");
 			hd3.addDetectVar("x-operamini-phone", "Android #");
@@ -1090,7 +1083,7 @@ public class HD3 {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			}
+			} 
 			
 			/*if (hd3.siteFetchArchive()) {
 				g_logger.fine("archive fetched.");

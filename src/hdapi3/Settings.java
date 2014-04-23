@@ -44,19 +44,18 @@ public class Settings extends Properties{
 	 * @throws IOException
 	 * @throws ClassNotFoundException 
 	 */
+	@SuppressWarnings("deprecation")
 	public synchronized static boolean init() throws IOException, Exception
 	{
 		if (g_instance == null) {
 			try {
 				File config_file = new File(CONFIG_NAME);
-				URL url = config_file.toURL(); //ClassLoader.getSystemResource(CONFIG_NAME);		
-				//System.out.println(url);
-				g_instance = new Settings();				
+				URL url = config_file.toURL(); //ClassLoader.getSystemResource(CONFIG_NAME);						
+				g_instance = new Settings();								
 				if (url == null) {
 					return false;
 				}
-				g_instance.load(url.openStream());
-				//System.out.println(g_instance);
+				g_instance.load(url.openStream());				
 			} catch (IOException ie) {
 				throw ie;
 			}
@@ -262,7 +261,7 @@ public class Settings extends Properties{
 			System.out.println("proxy.address : " + Settings.getProxyAddress());
 			System.out.println("proxy.port : " + Settings.getProxyPort());
 			System.out.println("proxy.username : " + Settings.getProxyUsername());
-			System.out.println("proxy.password : " + Settings.getProxyPassword());
+			System.out.println("proxy.password : " + Settings.getProxyPassword()); 
 			
 		} catch (Exception e) {
 			e.printStackTrace();
