@@ -243,8 +243,7 @@ public class Settings extends Properties{
 		return v;
 	}
 	
-	public static void main(String[] args)
-	{
+	public static void main(String[] args) {
 		try {
 			Settings.init();
 			System.out.println("common.username : " + Settings.getUsername());
@@ -261,8 +260,7 @@ public class Settings extends Properties{
 			System.out.println("proxy.address : " + Settings.getProxyAddress());
 			System.out.println("proxy.port : " + Settings.getProxyPort());
 			System.out.println("proxy.username : " + Settings.getProxyUsername());
-			System.out.println("proxy.password : " + Settings.getProxyPassword()); 
-			
+			System.out.println("proxy.password : " + Settings.getProxyPassword()); 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

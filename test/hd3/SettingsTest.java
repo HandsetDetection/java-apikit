@@ -27,8 +27,7 @@ public class SettingsTest extends TestCase {
 		
 		// Test fail
 		assertEquals(Settings.getUsername(), "your_username");
-		assertTrue(Settings.isUseLocal());
-		
+		assertTrue(Settings.isUseLocal());		
 	}
 
 }
