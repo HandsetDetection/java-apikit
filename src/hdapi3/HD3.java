@@ -4,7 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -344,12 +346,17 @@ public class HD3 {
 		return remote("site/delete/" + getSiteId(), null);
 	}
 	
+	private boolean getFilesDirectory() {
+		File f = new File(this.localFilesDirectory);
+		return f.exists() ? false : f.mkdir();
+	}
+	
 	public boolean siteFetchArchive() {
 		initRequest();
 		ByteArrayOutputStream reply = new ByteArrayOutputStream();
-		String zipFile;
+		String zipFile;		
+		this.getFilesDirectory();	// If directory is not created then create one
 		zipFile = this.localFilesDirectory + File.separator + "ultimate.zip";		
-
 		try {
 			// Increase the timeout, because the default of 5 seconds just isnt enough.
 			// Note : Errors will be JSON documents whereas the Archive will be a ZIP file.
@@ -430,7 +437,7 @@ public class HD3 {
 		} catch (Exception e) {
 			this.createErrorReply(299, "Failed to unzip archive.", e.getMessage());
 			return false;
-		} 
+		}
 		g_logger.warning("Done");
 		return true;
 	}
@@ -1085,11 +1092,13 @@ public class HD3 {
 				g_logger.severe(hd3.getError());
 			} 
 			
-			/*if (hd3.siteFetchArchive()) {
+			if (hd3.siteFetchArchive()) {
 				g_logger.fine("archive fetched.");
+				int size = hd3.getRawReply().length;
+				System.out.println(size);
 			} else {
 				g_logger.severe(hd3.getError());
-			} */
+			} 
 
 		} catch (Exception ie) {
 			ie.printStackTrace();
