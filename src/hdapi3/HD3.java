@@ -4,9 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -28,44 +26,98 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import org.apache.commons.codec.binary.Base64;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+/* 
+* ****************************************************
+* * The HD3 class
+* * Release 3.00 * 
+* * HandsetDetection
+* ****************************************************
+*/
 public class HD3 {
+		
+	/** Logger for this class and subclasses */
 	private final static Logger g_logger = Logger.getLogger(HD3.class.getName());
 	
+	/** The realm. */
 	private String realm;
-	private String username;
+	
+	/** The username. */
+	private String username;	
+
+	/** The secret key. */
 	private String secret;
+	
+	/** The use local. */
 	private boolean useLocal;
+	
+	/** The api server. */
 	private String apiServer;
+	
+	/** The log server. */
 	private String logServer;
+	
+	/** The site id. */
 	private String siteId;
+	
+	/** The mobile site. */
 	private String mobileSite;
+	
+	/** The non mobile. */
 	private String nonMobile;
+	
+	/** The match filter. */
 	private String matchFilter;
 	
+	/** The connect timeout. */
 	private int connectTimeout;
+	
+	/** The read timeout. */
 	private int readTimeout;
 
+	/** The use proxy. */
 	private boolean useProxy;
+	
+	/** The proxy address. */
 	private String proxyAddress;
+	
+	/** The proxy port. */
 	private int proxyPort;
+	
+	/** The proxy username. */
 	private String proxyUsername;
+	
+	/** The proxy password. */
 	private String proxyPassword;
+	
+	/** The local files directory. */
 	private String localFilesDirectory;
 	
+	/** The m_detect request. */
 	private JsonObject m_detectRequest;
+	
+	/** The m_reply. */
 	private JsonObject m_reply;
+	
+	/** The m_raw reply. */
 	private byte[] m_rawReply;
+	
+	/** The m_error. */
 	private String m_error;
+	
+	/** The m_cache. */
 	private HDCache m_cache;
+	
+	/** The m_specs. */
 	private JsonObject m_specs;
 	
+	/**
+	 * Sets HD3 properties from Settings.
+	 */
 	public HD3() {
 		this.realm = "APIv3";
 		this.username = Settings.getUsername();		
@@ -93,9 +145,20 @@ public class HD3 {
 		this.m_cache = HDCache.getInstance();
 	}
 
+	/**
+	 * Setup.
+	 */
 	public void setup() {
 		setup(null, null, null);
 	}
+	
+	/**
+	 * Setup.
+	 *
+	 * @param headers the headers
+	 * @param serverIpAddress the server ip address
+	 * @param requestURI the request uri
+	 */
 	public void setup(Map<String, String> headers, String serverIpAddress,
 			String requestURI) {
 		try {
@@ -116,11 +179,21 @@ public class HD3 {
 		}
 	}
 	
+	/**
+	 * Device vendors.
+	 *
+	 * @return true, if successful
+	 */
 	public boolean deviceVendors() {
 		initRequest();
 		return isUseLocal() ? localDeviceVendors() :remote("device/vendors", null);
 	}
 	
+	/**
+	 * Local device vendors.
+	 *
+	 * @return true, if successful
+	 */
 	private boolean localDeviceVendors() {
 		JsonObject data = this.localGetSpecs();		
 		boolean ret = false;
@@ -156,11 +229,23 @@ public class HD3 {
 		return ret;				
 	}
 
+	/**
+	 * Device models.
+	 *
+	 * @param vendor the vendor
+	 * @return true, if successful
+	 */
 	public boolean deviceModels(String vendor) {
 		initRequest();
 		return isUseLocal()? localDeviceModels(vendor) : remote("device/models/" + vendor, null); 
 	}
 	
+	/**
+	 * Local device models.
+	 *
+	 * @param vendor the vendor
+	 * @return true, if successful
+	 */
 	private boolean localDeviceModels(String vendor) {
 		boolean ret = false;
 		JsonObject data = this.localGetSpecs();
@@ -223,6 +308,13 @@ public class HD3 {
 		return ret;
 	}
 	
+	/**
+	 * Device view.
+	 *
+	 * @param vendor the vendor
+	 * @param model the model
+	 * @return true, if successful
+	 */
 	public boolean deviceView(String vendor, String model) {
 		initRequest();
 		StringBuilder sb = new StringBuilder();
@@ -230,6 +322,13 @@ public class HD3 {
 		return isUseLocal() ? localDeviceView(vendor, model) : remote(service, null);
 	}
 	
+	/**
+	 * Local device view.
+	 *
+	 * @param vendor the vendor
+	 * @param model the model
+	 * @return true, if successful
+	 */
 	private boolean localDeviceView(String vendor, String model) {
 		boolean ret = false;
 		JsonObject data = this.localGetSpecs();
@@ -269,6 +368,13 @@ public class HD3 {
 		return ret;
 	}
 	
+	/**
+	 * Device what has.
+	 *
+	 * @param key the key
+	 * @param value the value
+	 * @return true, if successful
+	 */
 	public boolean deviceWhatHas(String key, String value) {
 		initRequest();
 		StringBuilder sb = new StringBuilder();
@@ -276,6 +382,13 @@ public class HD3 {
 		return isUseLocal()? localDeviceWhatHas(key, value) : remote(service, null);
 	}
 	
+	/**
+	 * Local device what has.
+	 *
+	 * @param key the key
+	 * @param value the value
+	 * @return true, if successful
+	 */
 	private boolean localDeviceWhatHas(String key, String value) {
 		boolean ret = false;
 		JsonObject data = this.localGetSpecs();
@@ -326,31 +439,63 @@ public class HD3 {
 	}
 	
 	
+	/**
+	 * Site add.
+	 *
+	 * @param data the data
+	 * @return true, if successful
+	 */
 	public boolean siteAdd(JsonObject data) {
 		initRequest();
 		return remote("site/add", data);
 	}
 	
+	/**
+	 * Site edit.
+	 *
+	 * @param data the data
+	 * @return true, if successful
+	 */
 	public boolean siteEdit(JsonObject data) {
 		initRequest();
 		return remote("site/edit/" + getSiteId(), data);
 	}
 	
+	/**
+	 * Site view.
+	 *
+	 * @return true, if successful
+	 */
 	public boolean siteView() {
 		initRequest();
 		return remote("site/view/" + getSiteId(), null);
 	}
 	
+	/**
+	 * Site delete.
+	 *
+	 * @return true, if successful
+	 */
 	public boolean siteDelete() {
 		initRequest();
 		return remote("site/delete/" + getSiteId(), null);
 	}
 	
+	/**
+	 * Gets the files directory.
+	 *
+	 * @return the files directory
+	 */
 	private boolean getFilesDirectory() {
 		File f = new File(this.localFilesDirectory);
 		return f.exists() ? false : f.mkdir();
 	}
 	
+	/**
+	 * Site fetch archive.
+	 *
+	 * @return true, if successful
+	 */
 	public boolean siteFetchArchive() {
 		initRequest();
 		ByteArrayOutputStream reply = new ByteArrayOutputStream();
@@ -442,6 +587,12 @@ public class HD3 {
 		return true;
 	}
 		
+	/**
+	 * Adds the detect var.
+	 *
+	 * @param key the key
+	 * @param value the value
+	 */
 	public void addDetectVar(String key, String value) {
 		if (this.m_detectRequest == null) {
 			this.m_detectRequest = new JsonObject();
@@ -449,6 +600,11 @@ public class HD3 {
 		this.m_detectRequest.addProperty(key, value);
 	}
 	
+	/**
+	 * Site detect.
+	 *
+	 * @return true, if successful
+	 */
 	public boolean siteDetect() {
 		initRequest();
 		String id = getSiteId();
@@ -488,6 +644,11 @@ public class HD3 {
 		}
 	}
 	
+	/**
+	 * Local site detect.
+	 *
+	 * @return true, if successful
+	 */
 	private boolean localSiteDetect() {
 		JsonObject device = null;
 		JsonObject specs = null;
@@ -566,6 +727,13 @@ public class HD3 {
 		return false;
 	}
 	
+	/**
+	 * Gets the cache specs.
+	 *
+	 * @param id the id
+	 * @param type the type
+	 * @return the cache specs
+	 */
 	private JsonObject getCacheSpecs(String id, String type) {
 		if (HD3Util.isNullOrEmpty(id) || HD3Util.isNullOrEmpty(type)) return null;
 		StringBuilder cacheKey = new StringBuilder();
@@ -573,6 +741,12 @@ public class HD3 {
 		return getCache(cacheKey.toString());
 	}
 	
+	/**
+	 * Gets the cache.
+	 *
+	 * @param key the key
+	 * @return the cache
+	 */
 	private JsonObject getCache(String key) {
 		if (HD3Util.isNullOrEmpty(key)) return null; 
 
@@ -605,6 +779,11 @@ public class HD3 {
 		return null;
 	}
 		
+	/**
+	 * Gets the device.
+	 *
+	 * @return the device
+	 */
 	private JsonElement getDevice() {
 		String agent = null;
 		HashMap<String, String> headers = HD3Util.parseHeaders(m_detectRequest);
@@ -660,10 +839,25 @@ public class HD3 {
 		
 	}
 	
+	/**
+	 * Match device.
+	 *
+	 * @param header the header
+	 * @param value the value
+	 * @return the json element
+	 */
 	private JsonElement matchDevice(String header, String value) {
 		return matchDevice(header, value, 0);
 	}
 	
+	/**
+	 * Match device.
+	 *
+	 * @param header the header
+	 * @param value the value
+	 * @param generic the generic
+	 * @return the json element
+	 */
 	private JsonElement matchDevice(String header, String value, int generic) {
 		if (HD3Util.isNullOrEmpty(value)) return null;
 		value = value.toLowerCase().replaceAll(getMatchFilter(), "");
@@ -671,6 +865,14 @@ public class HD3 {
 		return match(header, value, treeTag);
 	}
 	
+	/**
+	 * Match.
+	 *
+	 * @param header the header
+	 * @param newValue the new value
+	 * @param treeTag the tree tag
+	 * @return the json element
+	 */
 	private JsonElement match(String header, String newValue, String treeTag) {
 
 		if (HD3Util.isNullOrEmpty(newValue) || newValue.length() < 4) {
@@ -728,11 +930,24 @@ public class HD3 {
 		}
 		return null;
 	}
+	
+	/**
+	 * Gets the branch.
+	 *
+	 * @param name the name
+	 * @return the branch
+	 */
 	private JsonElement getBranch(String name) {
 		if (HD3Util.isNullOrEmpty(name)) return null;
 		return getCache(name);
 	}
 			
+	/**
+	 * Gets the extra.
+	 *
+	 * @param classKey the class key
+	 * @return the extra
+	 */
 	private JsonElement getExtra(String classKey) {
 		HashMap<String, String> headers = HD3Util.parseHeaders(m_detectRequest);
 		ArrayList<String> checkOrder = new ArrayList<String>();
@@ -754,12 +969,26 @@ public class HD3 {
 		return null;
 	}
 	
+	/**
+	 * Match extra.
+	 *
+	 * @param header the header
+	 * @param value the value
+	 * @param classKey the class key
+	 * @return the json element
+	 */
 	private JsonElement matchExtra(String header ,String value, String classKey) {
 		value = value.toLowerCase().replaceAll(" ", "");
 		String treeTag = header + classKey;
 		return match(header, value, treeTag);
 	}
 	
+	/**
+	 * Validate user agent.
+	 *
+	 * @param userAgent the user agent
+	 * @return true, if successful
+	 */
 	private boolean validateUserAgent(String userAgent) {
 		if (HD3Util.isNullOrEmpty(userAgent)) return false;
 		Pattern p = Pattern.compile(getNonMobile());
@@ -771,6 +1000,13 @@ public class HD3 {
 	}
 	
 	// TODO : Add retries into remote
+	/**
+	 * Remote.
+	 *
+	 * @param service the service
+	 * @param data the data
+	 * @return true, if successful
+	 */
 	private boolean remote(String service, JsonObject data) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		ByteArrayInputStream in = null;
@@ -818,6 +1054,14 @@ public class HD3 {
 		return ret;
 	}
 
+	/**
+	 * Post.
+	 *
+	 * @param data the data
+	 * @param service the service
+	 * @param response the response
+	 * @return true, if successful
+	 */
 	private boolean post(String data, String service, OutputStream response) {
 		boolean ret = false;
 		try {
@@ -869,6 +1113,13 @@ public class HD3 {
 		return ret;
 	}
 
+	/**
+	 * Gets the authorization header.
+	 *
+	 * @param requestUrl the request url
+	 * @return the authorization header
+	 * @throws Exception the exception
+	 */
 	private String getAuthorizationHeader(URL requestUrl)
 			throws Exception {
 		String nc = "00000001";
@@ -900,6 +1151,11 @@ public class HD3 {
 		return sb.toString();
 	}
 
+	/**
+	 * Gets the basic proxy pass.
+	 *
+	 * @return the basic proxy pass
+	 */
 	private String getBasicProxyPass() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Basic ");
@@ -908,6 +1164,11 @@ public class HD3 {
 	}
 	
 	// Build up the full devices tree
+	/**
+	 * Local get specs.
+	 *
+	 * @return the json object
+	 */
 	public JsonObject localGetSpecs()  {
 		String file;
 		JsonArray specs = new JsonArray();
@@ -949,6 +1210,12 @@ public class HD3 {
 		return reply;
 	}
 	
+	/**
+	 * Creates the error reply.
+	 *
+	 * @param status the status
+	 * @param msg the msg
+	 */
 	private void createErrorReply(int status, String msg) {
 		this.m_reply = new JsonObject();
 		this.m_reply.addProperty(JsonContants.STATUS, status);
@@ -960,6 +1227,13 @@ public class HD3 {
 		g_logger.severe(sb.toString());
 	}
 
+	/**
+	 * Creates the error reply.
+	 *
+	 * @param status the status
+	 * @param msg the msg
+	 * @param exceptionMessage the exception message
+	 */
 	private void createErrorReply(int status, String msg, String exceptionMessage) {
 		this.m_reply = new JsonObject();
 		this.m_reply.addProperty(JsonContants.STATUS, status);
@@ -971,55 +1245,306 @@ public class HD3 {
 		this.setError(sb.toString());
 		g_logger.severe(sb.toString());
 	}	
+	
+	/**
+	 * Inits the request.
+	 */
 	private void initRequest() {
 		this.m_reply = null;
 		this.m_rawReply = null;
 		setError("");
 	}
 
+	/**
+	 * Gets the realm.
+	 *
+	 * @return the realm
+	 */
 	public String getRealm() { return realm; }
+	
+	/**
+	 * Gets the error.
+	 *
+	 * @return the error
+	 */
 	public String getError() { return m_error; }
+	
+	/**
+	 * Gets the username.
+	 *
+	 * @return the username
+	 */
 	public String getUsername() { return username; }
+	
+	/**
+	 * Gets the secret.
+	 *
+	 * @return the secret
+	 */
 	public String getSecret() { return secret; }
+	
+	/**
+	 * Checks if is use local.
+	 *
+	 * @return true, if is use local
+	 */
 	public boolean isUseLocal() { return useLocal; }
+	
+	/**
+	 * Checks if is use proxy.
+	 *
+	 * @return true, if is use proxy
+	 */
 	public boolean isUseProxy() { return useProxy; }
+	
+	/**
+	 * Gets the api server.
+	 *
+	 * @return the api server
+	 */
 	public String getApiServer() { return apiServer; }
+	
+	/**
+	 * Gets the log server.
+	 *
+	 * @return the log server
+	 */
 	public String getLogServer() { return logServer; }
+	
+	/**
+	 * Gets the site id.
+	 *
+	 * @return the site id
+	 */
 	public String getSiteId() { return siteId; }
+	
+	/**
+	 * Gets the mobile site.
+	 *
+	 * @return the mobile site
+	 */
 	public String getMobileSite() { return mobileSite; }
+	
+	/**
+	 * Gets the match filter.
+	 *
+	 * @return the match filter
+	 */
 	public String getMatchFilter() { return matchFilter; }
+	
+	/**
+	 * Gets the proxy address.
+	 *
+	 * @return the proxy address
+	 */
 	public String getProxyAddress() { return proxyAddress; }
+	
+	/**
+	 * Gets the proxy username.
+	 *
+	 * @return the proxy username
+	 */
 	public String getProxyUsername() { return proxyUsername; }
+	
+	/**
+	 * Gets the proxy password.
+	 *
+	 * @return the proxy password
+	 */
 	public String getProxyPassword() { return proxyPassword; }
+	
+	/**
+	 * Gets the read timeout.
+	 *
+	 * @return the read timeout
+	 */
 	public int getReadTimeout() { return readTimeout; }
+	
+	/**
+	 * Gets the connect timeout.
+	 *
+	 * @return the connect timeout
+	 */
 	public int getConnectTimeout() { return connectTimeout; }
+	
+	/**
+	 * Gets the proxy port.
+	 *
+	 * @return the proxy port
+	 */
 	public int getProxyPort() { return proxyPort; }
+	
+	/**
+	 * Gets the detect request.
+	 *
+	 * @return the detect request
+	 */
 	public JsonObject getDetectRequest() { return m_detectRequest; }
+	
+	/**
+	 * Gets the reply.
+	 *
+	 * @return the reply
+	 */
 	public JsonObject getReply() { return m_reply; }
+	
+	/**
+	 * Gets the raw reply.
+	 *
+	 * @return the raw reply
+	 */
 	public byte[] getRawReply() { return m_rawReply; }
+	
+	/**
+	 * Gets the non mobile.
+	 *
+	 * @return the non mobile
+	 */
 	public String getNonMobile() { return nonMobile; }
 	
+	/**
+	 * Sets the realm.
+	 *
+	 * @param realm the new realm
+	 */
 	public void setRealm(String realm) { this.realm = realm; }
+	
+	/**
+	 * Sets the error.
+	 *
+	 * @param error the new error
+	 */
 	public void setError(String error) { this.m_error = error; }
+	
+	/**
+	 * Sets the username.
+	 *
+	 * @param username the new username
+	 */
 	public void setUsername(String username) { this.username = username; }
+	
+	/**
+	 * Sets the secret.
+	 *
+	 * @param secret the new secret
+	 */
 	public void setSecret(String secret) { this.secret = secret; }
+	
+	/**
+	 * Sets the use local.
+	 *
+	 * @param useLocal the new use local
+	 */
 	public void setUseLocal(boolean useLocal) { this.useLocal = useLocal; }
+	
+	/**
+	 * Sets the api server.
+	 *
+	 * @param apiServer the new api server
+	 */
 	public void setApiServer(String apiServer) { this.apiServer = apiServer; }
+	
+	/**
+	 * Sets the log server.
+	 *
+	 * @param logServer the new log server
+	 */
 	public void setLogServer(String logServer) { this.logServer = logServer; }
+	
+	/**
+	 * Sets the site id.
+	 *
+	 * @param siteId the new site id
+	 */
 	public void setSiteId(String siteId) { this.siteId = siteId; }
+	
+	/**
+	 * Sets the mobile site.
+	 *
+	 * @param mobileSite the new mobile site
+	 */
 	public void setMobileSite(String mobileSite) { this.mobileSite = mobileSite; }
+	
+	/**
+	 * Sets the match filter.
+	 *
+	 * @param matchFilter the new match filter
+	 */
 	public void setMatchFilter(String matchFilter) { this.matchFilter = matchFilter; }
+	
+	/**
+	 * Sets the connect timeout.
+	 *
+	 * @param connectTimeout the new connect timeout
+	 */
 	public void setConnectTimeout(int connectTimeout) { this.connectTimeout = connectTimeout; }
+	
+	/**
+	 * Sets the read timeout.
+	 *
+	 * @param readTimeout the new read timeout
+	 */
 	public void setReadTimeout(int readTimeout) { this.readTimeout = readTimeout; }
+	
+	/**
+	 * Sets the use proxy.
+	 *
+	 * @param useProxy the new use proxy
+	 */
 	public void setUseProxy(boolean useProxy) { this.useProxy = useProxy; }
+	
+	/**
+	 * Sets the proxy address.
+	 *
+	 * @param proxyAddress the new proxy address
+	 */
 	public void setProxyAddress(String proxyAddress) { this.proxyAddress = proxyAddress; }
+	
+	/**
+	 * Sets the proxy port.
+	 *
+	 * @param proxyPort the new proxy port
+	 */
 	public void setProxyPort(int proxyPort) { this.proxyPort = proxyPort; }
+	
+	/**
+	 * Sets the proxy username.
+	 *
+	 * @param proxyUsername the new proxy username
+	 */
 	public void setProxyUsername(String proxyUsername) { this.proxyUsername = proxyUsername; }
+	
+	/**
+	 * Sets the proxy password.
+	 *
+	 * @param proxyPassword the new proxy password
+	 */
 	public void setProxyPassword(String proxyPassword) { this.proxyPassword = proxyPassword; }
+	
+	/**
+	 * Sets the detect request.
+	 *
+	 * @param request the new detect request
+	 */
 	public void setDetectRequest(JsonObject request) { this.m_detectRequest = request; }
+	
+	/**
+	 * Reset detect request.
+	 */
 	public void resetDetectRequest() { this.m_detectRequest = new JsonObject(); }
+	
+	/**
+	 * Sets the non mobile.
+	 *
+	 * @param nonMobile the new non mobile
+	 */
 	public void setNonMobile(String nonMobile) { this.nonMobile = nonMobile; }
 
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
 	public static void main(String[] args) {
 		Logger topLogger = java.util.logging.Logger.getLogger("");
 		Handler consoleHandler = null;
@@ -1094,8 +1619,6 @@ public class HD3 {
 			
 			if (hd3.siteFetchArchive()) {
 				g_logger.fine("archive fetched.");
-				int size = hd3.getRawReply().length;
-				System.out.println(size);
 			} else {
 				g_logger.severe(hd3.getError());
 			} 

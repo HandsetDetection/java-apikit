@@ -3,36 +3,75 @@ package hdapi3;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+/**
+ * The Class HDCache.
+ */
 public class HDCache {
+	
+	/** The Constant MAX_ENTRIES. */
 	private static final int MAX_ENTRIES = 50000;
+	
+	/** The Constant INSTANCE. */
 	private static final HDCache INSTANCE = new HDCache();
+	
+	/** The hdcached objects. */
 	private static Cache<String, Object> HDCACHED_OBJECTS;
 
 	static {
 		INSTANCE.initialize();
 	}
+	
+	/**
+	 * Initialize.
+	 */
 	private void initialize() {
 		// Any one off inits go here.
 		HDCACHED_OBJECTS = CacheBuilder.newBuilder().maximumSize(MAX_ENTRIES).build();
 	}
 	
+	/**
+	 * Gets the single instance of HDCache.
+	 *
+	 * @return single instance of HDCache
+	 */
 	public static HDCache getInstance() {
 		return INSTANCE;
 	}
 
+	/**
+	 * Instantiates a new HD cache.
+	 */
 	public HDCache() {
 	}
 	
+	/**
+	 * Put.
+	 *
+	 * @param key the key
+	 * @param value the value
+	 */
 	public void put(String key, Object value) {
 		HDCACHED_OBJECTS.put(key, value);
 	}
 	
+	/**
+	 * Gets the.
+	 *
+	 * @param key the key
+	 * @return the object
+	 */
 	public Object get(String key) {
 		Object reply;
 		reply = HDCACHED_OBJECTS.getIfPresent(key);
 		return reply;
 	}
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws Exception the exception
+	 */
 	public static void main(String[] args) throws Exception{
 		final HDCache myCache = new HDCache();
 		Thread t1 = new Thread() {

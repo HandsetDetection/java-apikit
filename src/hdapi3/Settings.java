@@ -10,39 +10,85 @@ import java.util.Properties;
  * A class of loading HDAPI configuration settings. 
  */
 public class Settings extends Properties{
+	
+	/** The Constant DEFAULT_COMMON_API_SERVER. */
 	private final static String DEFAULT_COMMON_API_SERVER = "http://api.handsetdetection.com";
+	
+	/** The Constant DEFAULT_COMMON_LOG_SERVER. */
 	private final static String DEFAULT_COMMON_LOG_SERVER = "http://log.handsetdetection.com";
+	
+	/** The Constant DEFAULT_COMMON_NON_MOBILE. */
 	private final static String DEFAULT_COMMON_NON_MOBILE = "/(^Feedfetcher|^FAST|^gsa_crawler|^Crawler|^goroam|^GameTracker|^http://|^Lynx|^Link|^LegalX|libwww|^LWP::Simple|FunWebProducts|^Nambu|^WordPress|^yacybot|^YahooFeedSeeker|^Yandex|^MovableType|^Baiduspider|SpamBlockerUtility|AOLBuild|Link Checker|Media Center|Creative ZENcast|GoogleToolbar|MEGAUPLOAD|Alexa Toolbar|^User-Agent|SIMBAR|Wazzup|PeoplePal|GTB5|Dealio Toolbar|Zango|MathPlayer|Hotbar|Comcast Install|WebMoney Advisor|OfficeLiveConnector|IEMB3|GTB6|Avant Browser|America Online Browser|SearchSystem|WinTSI|FBSMTWB|NET_lghpset)/";
+	
+	/** The Constant DEFAULT_COMMON_MATCH_FILTER. */
 	private final static String DEFAULT_COMMON_MATCH_FILTER = " |_|\\\\|\\#|-|,|\\.|/|:|\"|'|";
 	
+	/** The Constant COMMON_USERNAME. */
 	public final static String COMMON_USERNAME = "common.username";
+	
+	/** The Constant COMMON_SECRET. */
 	public final static String COMMON_SECRET = "common.secret";
+	
+	/** The Constant COMMON_API_SERVER. */
 	public final static String COMMON_API_SERVER = "common.api_server";
+	
+	/** The Constant COMMON_LOG_SERVER. */
 	public final static String COMMON_LOG_SERVER = "common.log_server";
+	
+	/** The Constant COMMON_SITE_ID. */
 	public final static String COMMON_SITE_ID = "common.site_id";
+	
+	/** The Constant COMMON_MOBILE_SITE. */
 	public final static String COMMON_MOBILE_SITE = "common.mobile_site";
+	
+	/** The Constant COMMON_USE_LOCAL. */
 	public final static String COMMON_USE_LOCAL = "common.use_local"; 
+	
+	/** The Constant COMMON_NON_MOBILE. */
 	public final static String COMMON_NON_MOBILE = "common.non_mobile";
+	
+	/** The Constant COMMON_MATCH_FILTER. */
 	public final static String COMMON_MATCH_FILTER = "common.match_filter";
 		
+	/** The Constant CONNECT_TIMEOUT. */
 	public final static String CONNECT_TIMEOUT = "connection.connect_timeout";
+	
+	/** The Constant READ_TIMEOUT. */
 	public final static String READ_TIMEOUT = "connection.read_timeout";
 
+	/** The Constant LOCAL_FILES_DIRECTORY. */
 	public final static String LOCAL_FILES_DIRECTORY = "local.files.directory";
+	
+	/** The Constant PROXY_ENABLED. */
 	public final static String PROXY_ENABLED = "proxy.enabled";
+	
+	/** The Constant PROXY_ADDRESS. */
 	public final static String PROXY_ADDRESS = "proxy.address";
+	
+	/** The Constant PROXY_PORT. */
 	public final static String PROXY_PORT = "proxy.port";
+	
+	/** The Constant PROXY_USERNAME. */
 	public final static String PROXY_USERNAME = "proxy.username";
+	
+	/** The Constant PROXY_PASSWORD. */
 	public final static String PROXY_PASSWORD = "proxy.password";
+	
+	/** The Constant CONFIG_NAME. */
 	public final static String CONFIG_NAME = "hdapi_config.properties";
+	
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 2L;
+	
+	/** The g_instance. */
 	private static Settings g_instance;
 
 	/**
 	 * Load setting from default classpath root.
-	 * @return
-	 * @throws IOException
-	 * @throws ClassNotFoundException 
+	 *
+	 * @return true, if successful
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws Exception the exception
 	 */
 	@SuppressWarnings("deprecation")
 	public synchronized static boolean init() throws IOException, Exception
@@ -65,9 +111,10 @@ public class Settings extends Properties{
 	
 	/**
 	 * Load setting from a specific java.io.InputStream object.
+	 *
 	 * @param is InputStream object
-	 * @return
-	 * @throws IOException
+	 * @return true, if successful
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public synchronized static boolean init(InputStream is) throws IOException
 	{
@@ -101,7 +148,8 @@ public class Settings extends Properties{
 	
 	/**
 	 * Getter of proxy server address setting: proxy.address . 
-	 * @return
+	 *
+	 * @return the proxy address
 	 */
 	public static String getProxyAddress() {
 		return g_instance.getProperty(PROXY_ADDRESS, "");
@@ -109,7 +157,8 @@ public class Settings extends Properties{
 	
 	/**
 	 * Getter of proxy port setting : proxy.port . 
-	 * @return
+	 *
+	 * @return the proxy port
 	 */
 	public static int getProxyPort() {
 		int port = 80;
@@ -125,7 +174,8 @@ public class Settings extends Properties{
 	
 	/**
 	 * Getter of proxy username for basic authentication: proxy.username.
-	 * @return
+	 *
+	 * @return the proxy username
 	 */
 	public static String getProxyUsername() {
 		return g_instance.getProperty(PROXY_USERNAME, "");
@@ -133,7 +183,8 @@ public class Settings extends Properties{
 	
 	/**
 	 * Getter of proxy password for basic authentication: proxy.password
-	 * @return
+	 *
+	 * @return the proxy password
 	 */
 	public static String getProxyPassword() {
 		return g_instance.getProperty(PROXY_PASSWORD, "");
@@ -142,7 +193,8 @@ public class Settings extends Properties{
 	
 	/**
 	 * Getter of API username setting: common.username
-	 * @return
+	 *
+	 * @return the username
 	 */
 	public static String getUsername() {
 		return g_instance.getProperty(COMMON_USERNAME, "");
@@ -150,7 +202,8 @@ public class Settings extends Properties{
 	
 	/**
 	 * Getter of API secret setting: common.secret
-	 * @return
+	 *
+	 * @return the secret
 	 */
 	public static String getSecret() {
 		return g_instance.getProperty(COMMON_SECRET, "");
@@ -158,7 +211,8 @@ public class Settings extends Properties{
 	
 	/**
 	 * Getter of site id setting: common.site_id
-	 * @return
+	 *
+	 * @return the site id
 	 */
 	public static String getSiteId() {
 		return g_instance.getProperty(COMMON_SITE_ID, "");
@@ -166,7 +220,8 @@ public class Settings extends Properties{
 	
 	/**
 	 * Getter of URL of API server setting: common.api_server  . The value of this setting can be one URL or multiple URLs separated by comma.
-	 * @return
+	 *
+	 * @return the api server
 	 */
 	public static String getApiServer() {
 		String v = g_instance.getProperty(COMMON_API_SERVER, DEFAULT_COMMON_API_SERVER);
@@ -178,7 +233,8 @@ public class Settings extends Properties{
 	
 	/**
 	 * Getter of URL of LOG server setting: common.log_server  . The value of this setting can be one URL or multiple URLs separated by comma.
-	 * @return
+	 *
+	 * @return the log server
 	 */
 	public static String getLogServer() {
 		String v = g_instance.getProperty(COMMON_LOG_SERVER, DEFAULT_COMMON_LOG_SERVER);
@@ -189,7 +245,9 @@ public class Settings extends Properties{
 	}
 	
 	/**
-	 * Get non-mobile match expression: common.non_mobile. 
+	 * Get non-mobile match expression: common.non_mobile.
+	 *
+	 * @return the non mobile
 	 */
 	public static String getNonMobile()
 	{
@@ -201,7 +259,9 @@ public class Settings extends Properties{
 	}
 	
 	/**
-	 * Get match filter expression: common.match_filter. 
+	 * Get match filter expression: common.match_filter.
+	 *
+	 * @return the match filter
 	 */
 	public static String getMatchFilter()
 	{
@@ -224,7 +284,8 @@ public class Settings extends Properties{
 	
 	/**
 	 * Getter of socket connect timeout setting: connection.connect_timeout
-	 * @return
+	 *
+	 * @return the connect timeout
 	 */
 	public static int getConnectTimeout() {
 		return Integer.parseInt(g_instance.getProperty(CONNECT_TIMEOUT, "5"));
@@ -232,17 +293,28 @@ public class Settings extends Properties{
 	
 	/**
 	 * Getter of socket read timeout setting: connection.read_timeout
-	 * @return
+	 *
+	 * @return the read timeout
 	 */
 	public static int getReadTimeout() {
 		return Integer.parseInt(g_instance.getProperty(READ_TIMEOUT, "5"));
 	}
 	
+	/**
+	 * Gets the mobile site.
+	 *
+	 * @return the mobile site
+	 */
 	public static String getMobileSite() {
 		String v = g_instance.getProperty(COMMON_MOBILE_SITE, "");
 		return v;
 	}
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
 	public static void main(String[] args) {
 		try {
 			Settings.init();

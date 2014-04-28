@@ -21,11 +21,28 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
+/**
+ * The Class HD3Util.
+ */
 public class HD3Util {
+	
+	/**
+	 * Checks if is null or empty.
+	 *
+	 * @param v the v
+	 * @return true, if is null or empty
+	 */
 	public static boolean isNullOrEmpty(String v) {
 		return v == null || "".equals(v) || "".equals(v.trim());
 	}
 
+	/**
+	 * Md5.
+	 *
+	 * @param input the input
+	 * @return the string
+	 * @throws Exception the exception
+	 */
 	public static String md5(String input) throws Exception{
 		MessageDigest m = MessageDigest.getInstance("MD5");
 		m.update(input.getBytes("ASCII"));
@@ -38,6 +55,12 @@ public class HD3Util {
 		return sb.toString();
 	}
 	
+	/**
+	 * To unique json array.
+	 *
+	 * @param strArray the str array
+	 * @return the json array
+	 */
 	public static JsonArray toUniqueJsonArray(List<String> strArray) {
 		Set<String> set = new HashSet<String>(strArray);
 		String[] temp = new String[0];
@@ -52,15 +75,37 @@ public class HD3Util {
 		return ret;
 	}
 	
+	/**
+	 * Checks if is null element.
+	 *
+	 * @param elem the elem
+	 * @return true, if is null element
+	 */
 	public static boolean isNullElement(JsonElement elem) {
 		return elem == null || elem.isJsonNull();
 	}
 	
- 	public static boolean saveBytesAsFile(String filename, byte[] content) throws Exception{
+ 	/**
+	  * Save bytes as file.
+	  *
+	  * @param filename the filename
+	  * @param content the content
+	  * @return true, if successful
+	  * @throws Exception the exception
+	  */
+	 public static boolean saveBytesAsFile(String filename, byte[] content) throws Exception{
  		return saveBytesAsFile(new File(filename), content);
  	}
 
- 	public static boolean saveBytesAsFile(File file, byte[] content) throws Exception{
+ 	/**
+	  * Save bytes as file.
+	  *
+	  * @param file the file
+	  * @param content the content
+	  * @return true, if successful
+	  * @throws Exception the exception
+	  */
+	 public static boolean saveBytesAsFile(File file, byte[] content) throws Exception{
  		if (file.createNewFile()) {
  			FileOutputStream fos = new FileOutputStream(file);
  			fos.write(content);
@@ -72,6 +117,12 @@ public class HD3Util {
 		return false;
 	}
 	
+	/**
+	 * Parses the json.
+	 *
+	 * @param in the in
+	 * @return the json element
+	 */
 	public static JsonElement parseJson(InputStream in) {
 		JsonParser parser = new JsonParser();
 		InputStreamReader reader = new InputStreamReader(in);
@@ -84,6 +135,12 @@ public class HD3Util {
 		return response;
 	}
 	
+	/**
+	 * Parses the headers.
+	 *
+	 * @param obj the obj
+	 * @return the hash map
+	 */
 	public static HashMap<String, String> parseHeaders(JsonObject obj) {
 		if (isNullElement(obj)) return null;
 		HashMap<String, String> ret = new HashMap<String, String>();
@@ -98,6 +155,12 @@ public class HD3Util {
 		return ret;
 	}
 	
+	/**
+	 * Gets the primary value.
+	 *
+	 * @param elem the elem
+	 * @return the primary value
+	 */
 	public static JsonElement getPrimaryValue(JsonElement elem) {
 		if (isNullElement(elem)) return null;
 		if (elem.isJsonPrimitive()) {
@@ -113,6 +176,13 @@ public class HD3Util {
 	}
 
 	// http://pragmatic-coding.blogspot.com.au/2012/05/gson-missing-get-element-function.html
+	/**
+	 * Gets the.
+	 *
+	 * @param value the value
+	 * @param jObj the j obj
+	 * @return the json element
+	 */
 	public static JsonElement get(String value, JsonObject jObj) {
 		if (jObj == null)
 			return null;
