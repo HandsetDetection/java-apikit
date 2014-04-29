@@ -10,7 +10,7 @@ Handset Detection is a service that lets you Detect Mobile Browsers. Our Databas
 * Server Failover - The api kit will seek out different Handset Detection servers if a connection times out.
 * A config file.
 
-## This is the installation guide of HDAPI examples. The examples are tested on Apache Tomcat 8.0
+This is the installation guide of HDAPI examples. The examples are tested on Apache Tomcat 8.0
 
 # Directories&files description:
 1. PROJECT_ROOT/src: Source code of servlets can be found at 
