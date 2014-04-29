@@ -15,10 +15,10 @@ Handset Detection is a service that lets you Detect Mobile Browsers. Our Databas
 ###### Directories&files description:
 1. PROJECT_ROOT/src: Source code of servlets can be found at 
 2. PROJECT_ROOT/build.xml: Ant build file.
-3. PROJECT_ROOT/hd3examples: Tomcat webapps directory contains classes and servlets. 
+3. PROJECT_ROOT/WebServiceHD3Test: Tomcat webapps directory contains classes and servlets. 
 
 ###### Installation steps:
-1. Copy directory hd3examples to {TOMCAT_ROOT}/webapps
+1. Copy directory WebServiceHD3Test to {TOMCAT_ROOT}/webapps
 2. Start Apache-Tomcat server and try url http://localhost:8080/WebServiceHD3Test/
 
 Happy Detecting - email hello@handsetdetection.com if you have any issues.
