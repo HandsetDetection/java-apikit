@@ -10,5 +10,15 @@ Handset Detection is a service that lets you Detect Mobile Browsers. Our Databas
 * Server Failover - The api kit will seek out different Handset Detection servers if a connection times out.
 * A config file.
 
+## How to deploy:
+1. Download the .war file
+2. Unzip
+3. Edit WEB-INF/hdapi_config.properties - insert your email address and secret from http://www.handsetdetection.com
+4. Zip the index.html & WEB-INF directory back into an archive.
+5. Rename the archive .war
+6. Deploy to your tomcat server.
+
+Happy Detecting - email hello@handsetdetection.com if you have any issues.
+
 
 
