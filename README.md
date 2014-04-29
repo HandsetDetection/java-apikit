@@ -11,12 +11,11 @@ Handset Detection is a service that lets you Detect Mobile Browsers. Our Databas
 * A config file.
 
 ## How to deploy:
-1. Download the .war file
-2. Unzip
+1. Create new folder name WebServiceHD3Test in your tomcat webapps/ directory.
+2. Download the WebServiceHD3Test.war file and WEB-INF folder inside WebServiceHD3Test/src/ directory.
+3. Put the WebServiceHD3Test.war file and WEB-INF folder inside your tomcat webapps/WebServiceHD3Test directory.
 3. Edit WEB-INF/hdapi_config.properties - insert your email address and secret from http://www.handsetdetection.com
-4. Zip the index.html & WEB-INF directory back into an archive.
-5. Rename the archive .war
-6. Deploy to your tomcat server.
+6. Run your tomcat server applicaton and go to this url http://localhost:8080/WebServiceHD3Test/. 8080 is the default port number of your tomcat server.
 
 Happy Detecting - email hello@handsetdetection.com if you have any issues.
 
