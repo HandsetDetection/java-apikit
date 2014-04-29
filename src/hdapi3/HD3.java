@@ -1569,7 +1569,6 @@ public class HD3 {
 			
 			HD3 hd3 = new HD3();
 			hd3.setup(null, "127.0.0.1", "http://localhost");
-
 			if (hd3.deviceVendors()) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
