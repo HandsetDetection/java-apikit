@@ -10,14 +10,14 @@ Handset Detection is a service that lets you Detect Mobile Browsers. Our Databas
 * Server Failover - The api kit will seek out different Handset Detection servers if a connection times out.
 * A config file.
 
-This is the installation guide of HDAPI examples. The examples are tested on Apache Tomcat 8.0
+##### This is the installation guide of HDAPI examples. The examples are tested on Apache Tomcat 8.0
 
-# Directories&files description:
+###### Directories&files description:
 1. PROJECT_ROOT/src: Source code of servlets can be found at 
 2. PROJECT_ROOT/build.xml: Ant build file.
 3. PROJECT_ROOT/hd3examples: Tomcat webapps directory contains classes and servlets. 
 
-# Installation steps:
+###### Installation steps:
 1. Copy directory hd3examples to {TOMCAT_ROOT}/webapps
 2. Start Apache-Tomcat server and try url http://localhost:8080/WebServiceHD3Test/
 
