@@ -225,8 +225,7 @@ public class HD3 {
 			ret = true;
 		} else {
 			this.createErrorReply(299, "Error: No devices data");
-		}		
-		System.out.println(reply);
+		}				
 		return ret;				
 	}
 
@@ -1207,8 +1206,7 @@ public class HD3 {
 		if (specs != null) {
 			reply.add("devices", specs);
 			this.m_specs = reply;
-		}
-		System.out.println(reply.toString());
+		}		
 		return reply;
 	}
 	
@@ -1575,8 +1573,7 @@ public class HD3 {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			} 
-			/*
+			} 			
 			if (hd3.deviceModels("Nokia")) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
@@ -1620,7 +1617,7 @@ public class HD3 {
 				g_logger.fine("archive fetched.");
 			} else {
 				g_logger.severe(hd3.getError());
-			} */
+			} 
 
 		} catch (Exception ie) {
 			ie.printStackTrace();
