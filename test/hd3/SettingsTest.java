@@ -2,6 +2,7 @@ package hd3;
 
 import junit.framework.TestCase;
 import hdapi3.Settings;
+
 import org.junit.Test;
 
 public class SettingsTest extends TestCase {
@@ -20,14 +21,13 @@ public class SettingsTest extends TestCase {
 	@Test
 	public void testSettings() {
 		// Pass based on what is inside the file properties
-		assertEquals(Settings.getUsername(), "203a2c5495");
-		assertEquals(Settings.getSecret(), "4Mcy7r7wDFdCDbg2");
-		assertEquals(Settings.getSiteId(), "50538");
-		assertFalse(Settings.isUseLocal());
-		
-		// Test fail
+		assertEquals(Settings.getUsername(), SecretConfig.getUserName("SECRET_NAME"));
+		assertEquals(Settings.getSecret(), SecretConfig.getSecret("SECRET_KEY"));
+		assertEquals(Settings.getSiteId(), SecretConfig.getSiteId("SITE_ID"));
+		assertFalse(Settings.isUseLocal());		
+		// Test failed
 		assertEquals(Settings.getUsername(), "your_username");
-		assertTrue(Settings.isUseLocal());		
+		assertTrue(Settings.isUseLocal());
 	}
 
 }

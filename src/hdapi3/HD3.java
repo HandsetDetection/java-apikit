@@ -176,7 +176,7 @@ public class HD3 {
 		} catch (Exception ex) {
 			g_logger.severe(ex.getMessage());
 			setError("Failed to setup detect request. Cause: " + ex.getMessage());
-		}
+		}		
 	}
 	
 	/**
@@ -225,7 +225,8 @@ public class HD3 {
 			ret = true;
 		} else {
 			this.createErrorReply(299, "Error: No devices data");
-		}
+		}		
+		System.out.println(reply);
 		return ret;				
 	}
 
@@ -1187,7 +1188,7 @@ public class HD3 {
 
 		for (int i = 0; i < fileList.length; i++) {
 			if (fileList[i].isFile()) {
-				file = fileList[i].getName();
+				file = fileList[i].getName();				
 				// If the file is in the cache already then grab it form there.
 		    	if (file.endsWith(".json") && file.startsWith("Device:")) {
 					String intValue = file.replaceAll("[a-zA-Z.:]", "");
@@ -1207,6 +1208,7 @@ public class HD3 {
 			reply.add("devices", specs);
 			this.m_specs = reply;
 		}
+		System.out.println(reply.toString());
 		return reply;
 	}
 	
@@ -1568,13 +1570,13 @@ public class HD3 {
 			fis.close();
 			
 			HD3 hd3 = new HD3();
-			hd3.setup(null, "127.0.0.1", "http://localhost");
+			hd3.setup(null, "127.0.0.1", "http://localhost");			
 			if (hd3.deviceVendors()) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
 			} 
-			
+			/*
 			if (hd3.deviceModels("Nokia")) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
@@ -1593,13 +1595,11 @@ public class HD3 {
 				g_logger.severe(hd3.getError());
 			} 
 	    			
-			hd3.addDetectVar("user-agent", "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95/12.0.013; Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413");
-			if (hd3.siteDetect()) {
+			hd3.addDetectVar("user-agent", "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95/12.0.013; Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413");											
+			if (hd3.siteDetect()) {								
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			} 
-			
 			hd3.addDetectVar("user-agent", "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95/12.0.013; Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413");
 			if (hd3.siteDetect()) {
 				g_logger.fine(hd3.getReply().toString());
@@ -1620,7 +1620,7 @@ public class HD3 {
 				g_logger.fine("archive fetched.");
 			} else {
 				g_logger.severe(hd3.getError());
-			} 
+			} */
 
 		} catch (Exception ie) {
 			ie.printStackTrace();

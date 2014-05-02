@@ -4,3 +4,4 @@ files/
 .DS_store
 hdapi_config.properties
 .gitignore
+/test/hd3/SecretConfig.java
