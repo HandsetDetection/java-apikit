@@ -32,8 +32,8 @@ public class HD3Test extends TestCase {
 	@Test
 	public void testHD3() throws IOException, Exception {				
 		assertTrue(Settings.init());
-		assertEquals(hd3.getUsername(), "11111111");				
-		assertEquals(hd3.getUsername(), SecretConfig.getUserName("SECRET_NAME"));		
+		assertEquals(hd3.getUsername(), "11111111");				// Failed
+		assertEquals(hd3.getUsername(), SecretConfig.getUserName("SECRET_NAME"));	// Passed		
 				
 	}	
 	@Test
@@ -61,7 +61,7 @@ public class HD3Test extends TestCase {
 	@Test
 	public void testDeviceWhatHas() {
 		assertFalse(hd3.isUseLocal());		
-		// Set Nokia as our device; Test success
+		// Set Nokia as our device; Test passed
 		hd3.deviceWhatHas("general_vendor", "Nokia");
 		JsonObject rootobj = hd3.getReply();		
 		// First device id: 1353, model:100

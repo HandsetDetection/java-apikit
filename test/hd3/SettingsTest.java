@@ -20,12 +20,13 @@ public class SettingsTest extends TestCase {
 			
 	@Test
 	public void testSettings() {
-		// Pass based on what is inside the file properties
-		assertEquals(Settings.getUsername(), SecretConfig.getUserName("SECRET_NAME"));
+		// Test Passed
+		assertEquals(Settings.getUsername(), SecretConfig.getUserName("SECRET_NAME"));	
 		assertEquals(Settings.getSecret(), SecretConfig.getSecret("SECRET_KEY"));
 		assertEquals(Settings.getSiteId(), SecretConfig.getSiteId("SITE_ID"));
 		assertFalse(Settings.isUseLocal());		
-		// Test failed
+		
+		// Failed
 		assertEquals(Settings.getUsername(), "your_username");
 		assertTrue(Settings.isUseLocal());
 	}
