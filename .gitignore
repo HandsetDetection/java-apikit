@@ -5,3 +5,4 @@ files/
 hdapi_config.properties
 .gitignore
 /test/hd3/SecretConfig.java
+test/hd3/SecretConfig.java
