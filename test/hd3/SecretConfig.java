@@ -22,15 +22,18 @@ public class SecretConfig {
 	}
 	
 	public static String getUserName(String secretName) {
-		return (secretName.equalsIgnoreCase("SECRET_NAME")) ? p.get("common.username").toString() : "0";
+		String username = p.get("common.username").toString();
+		return (secretName.equalsIgnoreCase(username)) ? username : "0";
 	} 
 	
 	public static String getSecret(String secretKey) {
-		return (secretKey.equalsIgnoreCase("SECRET_KEY")) ? p.get("common.secret").toString() : "0";
+		String key = p.get("common.secret").toString();
+		return (secretKey.equalsIgnoreCase(key)) ? key : "0";
 	}
 	
 	public static String getSiteId(String siteId) {
-		return (siteId.equalsIgnoreCase("SITE_ID")) ? p.get("common.site_id").toString() : "0";
+		String site_id = p.get("common.site_id").toString();
+		return (siteId.equalsIgnoreCase(site_id)) ?  site_id : "0";
 	}	
 	
 }

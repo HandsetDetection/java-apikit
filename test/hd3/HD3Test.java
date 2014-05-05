@@ -33,7 +33,7 @@ public class HD3Test extends TestCase {
 	public void testHD3() throws IOException, Exception {				
 		assertTrue(Settings.init());
 		assertEquals(hd3.getUsername(), "11111111");				// Failed
-		assertEquals(hd3.getUsername(), SecretConfig.getUserName("SECRET_NAME"));	// Passed		
+		assertEquals(hd3.getUsername(), SecretConfig.getUserName("SECRET_NAME"));		
 				
 	}	
 	@Test
