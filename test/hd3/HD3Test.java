@@ -32,10 +32,17 @@ public class HD3Test extends TestCase {
 	@Test
 	public void testHD3() throws IOException, Exception {				
 		assertTrue(Settings.init());
-		assertEquals(hd3.getUsername(), "11111111");				// Failed
+		assertEquals(hd3.getUsername(), "11111111");				
 		assertEquals(hd3.getUsername(), SecretConfig.getUserName("SECRET_NAME"));		
 				
 	}	
+	@Test
+	public void testHD3ConifgCredentials()
+	{
+		assertEquals(hd3.getUsername(), SecretConfig.getUserName("SECRET_NAME"));
+		assertEquals(hd3.getUsername(), SecretConfig.getSecret("SECRET_KEY"));
+		assertEquals(Settings.getSiteId(), SecretConfig.getSiteId("SITE_ID"));		
+	}
 	@Test
 	public void testDeviceVendors() {		
 		assertTrue(hd3.isUseLocal());				
@@ -45,11 +52,14 @@ public class HD3Test extends TestCase {
 	public void testDeviceModels() {
 		assertTrue(hd3.isUseLocal());		
 		assertFalse(hd3.isUseLocal());		
+	}
+	@Test
+	public void testNokiaDeviceModels() {
 		hd3.deviceModels("Nokia");
 		JsonObject rootobj = hd3.getReply();
 		assertEquals(rootobj.get("model").getAsJsonArray().get(0).getAsString(), "100");
 	}
-	@Ignore
+	@Test
 	public void testDeviceView() {
 		assertFalse(hd3.isUseLocal());		
 		// Set Nokia as our device; general_mode: 660 
@@ -84,7 +94,7 @@ public class HD3Test extends TestCase {
 	}
 	@Test
 	public void testSiteFetchArchive() {		
-		//assertTrue(hd3.siteFetchArchive());
+		assertTrue(hd3.siteFetchArchive());
 	}
 	@Test
 	public void testSiteDetect() {
