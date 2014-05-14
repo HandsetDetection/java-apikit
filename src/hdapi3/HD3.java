@@ -13,6 +13,8 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +28,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 import org.apache.commons.codec.binary.Base64;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -196,6 +202,7 @@ public class HD3 {
 	 */
 	private boolean localDeviceVendors() {
 		JsonObject data = this.localGetSpecs();		
+		//System.out.println(data);
 		boolean ret = false;
 		if (data == null)
 			return ret;
@@ -1026,7 +1033,7 @@ public class HD3 {
 						this.setError("Error : No status set in reply");
 					} else if (temp.get("status").getAsInt() != 0) {
 						int status = temp.get(JsonContants.STATUS).getAsInt();
-						String message = temp.get(JsonContants.MESSAGE) == null ? "": temp.get(JsonContants.MESSAGE).getAsString();
+						String message = temp.get(JsonContants.MESSAGE) == null ? "": temp.get(JsonContants.MESSAGE).getAsString();						
 						StringBuilder sb = new StringBuilder();
 						sb.append("Error : ").append(status).append(", Message : ").append(message);
 						this.setError(sb.toString());
@@ -1050,7 +1057,7 @@ public class HD3 {
 			} catch (Exception e) {
 				g_logger.warning(e.getMessage());
 			}
-		}	
+		}			
 		return ret;
 	}
 
@@ -1072,7 +1079,7 @@ public class HD3 {
 			}
 			
 			StringBuilder sb = new StringBuilder();
-			sb.append(apiUrl.toString()).append("/").append(getRealm().toLowerCase()).append("/").append(service).append(".json");
+			sb.append(apiUrl.toString()).append("/").append(getRealm().toLowerCase()).append("/").append(service).append(".json");			
 			URL newURL = new URL(sb.toString());
 			URLConnection conn;
 			if (isUseProxy() && ! HD3Util.isNullOrEmpty(getProxyAddress())) {
@@ -1569,7 +1576,61 @@ public class HD3 {
 			
 			HD3 hd3 = new HD3();
 			hd3.setup(null, "127.0.0.1", "http://localhost");
-			if (hd3.deviceVendors()) {
+			
+			//hd3.addDetectVar("x-operamini-phone-ua", "Mozilla/5.0 (Linux; U;Android 2.1-update1; pt-br; U20a Build/2.1.1.A.0.6) AppleWebKit/530.17(KHTML, like Gecko) Version/4.0 Mobile Safari/530.17");
+			//hd3.siteDetect();
+			//hd3.deviceVendors();
+			hd3.deviceView("Nokia", "Lumia 610 NFC");	
+			String jsonResult = hd3.getReply().toString();			
+			JSONObject json = new JSONObject(jsonResult);				
+			
+			System.out.println(json);
+			
+			//System.out.println(json.getJSONObject("hd_specs").get("features").toString());
+			//System.out.println(json.get("vendor"));
+									
+			JSONArray a = (JSONArray) json.getJSONObject("device").get("display_other");
+			
+			//JSONArray a = (JSONArray) json.getJSONObject(null).get("vendor"); //json.get("vendor");
+					//json.getJSONObject("hd_specs").get("features");
+			
+			List<String> list = new ArrayList<String>();
+			for(int i = 0; i < a.length(); i++) {
+				list.add(a.getString(i));
+			}
+			String[] s = list.toArray(new String[list.size()]);			
+			System.out.println(list);
+			for(String l : s) {
+				if(l.equals("Glass")) {
+					System.out.println("Found");
+				}
+			}
+			System.out.println( Collections.binarySearch(list, "Gorilla Glass") );			
+			
+			/*String[] s = list.toArray(new String[list.size()]);
+														
+			System.out.println( Collections.binarySearch(list, "Caller group") );
+			
+			for(String b : s) {
+				System.out.println(b);
+			} */
+			
+			//System.out.println(json.getJSONObject("hd_specs").get("features").toString());
+			//System.out.println(json.getJSONObject("hd_specs").get("features").toString());
+			//System.out.println(json.get("features"));
+			//System.out.println(json.getJSONObject("hd_specs").get("general_platform_version").toString());
+			//System.out.println(json.getJSONObject("hd_specs").getString("features"));
+			//System.out.println(json.get);
+			//System.out.println(json.getJSONObject("device").getString("display_other").contains("Multitouch"));
+			//System.out.println(json);
+			//JsonObject json = hd3.getReply();			
+			//JsonElement elem = json.get("devices").getAsJsonObject().get("design_dimensions");
+			//JsonElement elem = json.get("devices").getAsJsonArray().get(0);
+			//String model = elem.getAsJsonObject().get("general_model").getAsString();
+			//System.out.println(elem);
+			//System.out.println(HD3Util.get("general_model", hd3.getReply()).getAsString());
+			//System.out.println(HD3Util.);			
+	/*		if (hd3.deviceVendors()) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
@@ -1600,13 +1661,6 @@ public class HD3 {
 				g_logger.severe(hd3.getError());
 			} 
 			
-			hd3.addDetectVar("user-agent", "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95/12.0.013; Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413");
-			if (hd3.siteDetect()) {
-				g_logger.fine(hd3.getReply().toString());
-			} else {
-				g_logger.severe(hd3.getError());
-			} 
-			
 			hd3.addDetectVar("user-agent", "Opera/9.80 (Android; OperaMini/7.0.29952/28.2144; U; pt) Presto/2.8.119 Version/11.10");
 			hd3.addDetectVar("x-operamini-phone", "Android #");
 			hd3.addDetectVar("x-operamini-phone-ua", "Mozilla/5.0 (Linux; U;Android 2.1-update1; pt-br; U20a Build/2.1.1.A.0.6) AppleWebKit/530.17(KHTML, like Gecko) Version/4.0 Mobile Safari/530.17");
@@ -1620,7 +1674,7 @@ public class HD3 {
 				g_logger.fine("archive fetched.");
 			} else {
 				g_logger.severe(hd3.getError());
-			} 
+			} */
 
 		} catch (Exception ie) {
 			ie.printStackTrace();
