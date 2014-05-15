@@ -1577,10 +1577,9 @@ public class HD3 {
 			HD3 hd3 = new HD3();
 			hd3.setup(null, "127.0.0.1", "http://localhost");
 			
-			//hd3.addDetectVar("x-operamini-phone-ua", "Mozilla/5.0 (Linux; U;Android 2.1-update1; pt-br; U20a Build/2.1.1.A.0.6) AppleWebKit/530.17(KHTML, like Gecko) Version/4.0 Mobile Safari/530.17");
-			//hd3.siteDetect();
-			//hd3.deviceVendors();
-			hd3.deviceView("Nokia", "Lumia 610 NFC");	
+			hd3.addDetectVar("x-operamini-phone-ua", "Mozilla/5.0 (Linux; U;Android 2.1-update1; pt-br; U20a Build/2.1.1.A.0.6) AppleWebKit/530.17(KHTML, like Gecko) Version/4.0 Mobile Safari/530.17");
+			hd3.siteDetect();
+			//hd3.deviceVendors();			
 			String jsonResult = hd3.getReply().toString();			
 			JSONObject json = new JSONObject(jsonResult);				
 			
@@ -1589,47 +1588,27 @@ public class HD3 {
 			//System.out.println(json.getJSONObject("hd_specs").get("features").toString());
 			//System.out.println(json.get("vendor"));
 									
-			JSONArray a = (JSONArray) json.getJSONObject("device").get("display_other");
+			JSONArray a = (JSONArray) json.getJSONObject("hd_specs").get("connectors");
 			
 			//JSONArray a = (JSONArray) json.getJSONObject(null).get("vendor"); //json.get("vendor");
 					//json.getJSONObject("hd_specs").get("features");
+			
+			System.out.println(a);
 			
 			List<String> list = new ArrayList<String>();
 			for(int i = 0; i < a.length(); i++) {
 				list.add(a.getString(i));
 			}
-			String[] s = list.toArray(new String[list.size()]);			
+			/*String[] s = list.toArray(new String[list.size()]);			
 			System.out.println(list);
 			for(String l : s) {
-				if(l.equals("Glass")) {
+				if(l.equals("Gorilla Glass")) {
 					System.out.println("Found");
 				}
-			}
-			System.out.println( Collections.binarySearch(list, "Gorilla Glass") );			
-			
-			/*String[] s = list.toArray(new String[list.size()]);
-														
-			System.out.println( Collections.binarySearch(list, "Caller group") );
-			
-			for(String b : s) {
-				System.out.println(b);
-			} */
-			
-			//System.out.println(json.getJSONObject("hd_specs").get("features").toString());
-			//System.out.println(json.getJSONObject("hd_specs").get("features").toString());
-			//System.out.println(json.get("features"));
-			//System.out.println(json.getJSONObject("hd_specs").get("general_platform_version").toString());
-			//System.out.println(json.getJSONObject("hd_specs").getString("features"));
-			//System.out.println(json.get);
-			//System.out.println(json.getJSONObject("device").getString("display_other").contains("Multitouch"));
-			//System.out.println(json);
-			//JsonObject json = hd3.getReply();			
-			//JsonElement elem = json.get("devices").getAsJsonObject().get("design_dimensions");
-			//JsonElement elem = json.get("devices").getAsJsonArray().get(0);
-			//String model = elem.getAsJsonObject().get("general_model").getAsString();
-			//System.out.println(elem);
-			//System.out.println(HD3Util.get("general_model", hd3.getReply()).getAsString());
-			//System.out.println(HD3Util.);			
+			}*/
+			Collections.sort(list);
+			//System.out.println( Collections.binarySearch(list, "Capacitive") );			
+	
 	/*		if (hd3.deviceVendors()) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
