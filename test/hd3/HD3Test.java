@@ -167,6 +167,8 @@ public class HD3Test extends TestCase {
 
 	@Test
 	public void testSiteDetectXOperaMini() {
+		hd3.addDetectVar("user-agent", "Opera/9.80 (Android; OperaMini/7.0.29952/28.2144; U; pt) Presto/2.8.119 Version/11.10");
+		hd3.addDetectVar("x-operamini-phone", "Android #");
 		hd3.addDetectVar("x-operamini-phone-ua", "Mozilla/5.0 (Linux; U;Android 2.1-update1; pt-br; U20a Build/2.1.1.A.0.6) AppleWebKit/530.17(KHTML, like Gecko) Version/4.0 Mobile Safari/530.17");
 		hd3.siteDetect();
 		try {
@@ -180,15 +182,7 @@ public class HD3Test extends TestCase {
 			e.printStackTrace();
 		}
 	} 
-	
-	
-/*
-	@Test
-	public void testSiteFetchArchive() {		
-		assertTrue(hd3.siteFetchArchive());
-	}
- */
-	
+		
 	@Ignore
 	private boolean jsonArrayToList(JSONObject json, String key1, String key2, String value) throws JSONException {
 		JSONArray jsonArray = (key2 == null) ? (JSONArray) json.get(key1) : 

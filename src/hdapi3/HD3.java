@@ -13,8 +13,6 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,11 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import org.apache.commons.codec.binary.Base64;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -201,8 +195,7 @@ public class HD3 {
 	 * @return true, if successful
 	 */
 	private boolean localDeviceVendors() {
-		JsonObject data = this.localGetSpecs();		
-		//System.out.println(data);
+		JsonObject data = this.localGetSpecs();				
 		boolean ret = false;
 		if (data == null)
 			return ret;
@@ -1575,41 +1568,9 @@ public class HD3 {
 			fis.close();
 			
 			HD3 hd3 = new HD3();
-			hd3.setup(null, "127.0.0.1", "http://localhost");
+			hd3.setup(null, "127.0.0.1", "http://localhost");	
 			
-			hd3.addDetectVar("x-operamini-phone-ua", "Mozilla/5.0 (Linux; U;Android 2.1-update1; pt-br; U20a Build/2.1.1.A.0.6) AppleWebKit/530.17(KHTML, like Gecko) Version/4.0 Mobile Safari/530.17");
-			hd3.siteDetect();
-			//hd3.deviceVendors();			
-			String jsonResult = hd3.getReply().toString();			
-			JSONObject json = new JSONObject(jsonResult);				
-			
-			System.out.println(json);
-			
-			//System.out.println(json.getJSONObject("hd_specs").get("features").toString());
-			//System.out.println(json.get("vendor"));
-									
-			JSONArray a = (JSONArray) json.getJSONObject("hd_specs").get("connectors");
-			
-			//JSONArray a = (JSONArray) json.getJSONObject(null).get("vendor"); //json.get("vendor");
-					//json.getJSONObject("hd_specs").get("features");
-			
-			System.out.println(a);
-			
-			List<String> list = new ArrayList<String>();
-			for(int i = 0; i < a.length(); i++) {
-				list.add(a.getString(i));
-			}
-			/*String[] s = list.toArray(new String[list.size()]);			
-			System.out.println(list);
-			for(String l : s) {
-				if(l.equals("Gorilla Glass")) {
-					System.out.println("Found");
-				}
-			}*/
-			Collections.sort(list);
-			//System.out.println( Collections.binarySearch(list, "Capacitive") );			
-	
-	/*		if (hd3.deviceVendors()) {
+			if (hd3.deviceVendors()) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
@@ -1653,7 +1614,7 @@ public class HD3 {
 				g_logger.fine("archive fetched.");
 			} else {
 				g_logger.severe(hd3.getError());
-			} */
+			} 
 
 		} catch (Exception ie) {
 			ie.printStackTrace();
