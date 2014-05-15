@@ -1190,8 +1190,7 @@ public class HD3 {
 				// If the file is in the cache already then grab it form there.		    	
 				if (file.endsWith(".json") && file.startsWith("Device_")) {					// Device:					
 		    		String intValue = file.replaceAll("[a-zA-Z._]", "");					// [a-zA-Z.:]
-					data = getCacheSpecs(intValue, "Device");			
-					System.out.println(data);
+					data = getCacheSpecs(intValue, "Device");								
 	    			if (data == null || data.isJsonNull() || ! data.isJsonObject()) {
 	    				createErrorReply(299, "Unable to parse Device file : " + file);
 	    				return null;
@@ -1567,12 +1566,8 @@ public class HD3 {
 			
 			HD3 hd3 = new HD3();
 			hd3.setup(null, "127.0.0.1", "http://localhost");	
-
-			hd3.deviceVendors();
 			
-			System.out.println(hd3.getReply().toString());
-			
-		/*	if (hd3.deviceVendors()) {
+			if (hd3.deviceVendors()) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
@@ -1611,7 +1606,7 @@ public class HD3 {
 			} else {
 				g_logger.severe(hd3.getError());
 			} 
-			
+		/*	
 			if (hd3.siteFetchArchive()) {
 				g_logger.fine("archive fetched.");
 			} else {
