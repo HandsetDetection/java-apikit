@@ -31,7 +31,7 @@ public class HD3Util {
 	 * @param v the v
 	 * @return true, if is null or empty
 	 */
-	public static boolean isNullOrEmpty(String v) {
+	public static boolean isNullOrEmpty(String v) {		
 		return v == null || "".equals(v) || "".equals(v.trim());
 	}
 

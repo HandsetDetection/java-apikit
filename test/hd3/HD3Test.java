@@ -2,6 +2,7 @@ package hd3;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import junit.framework.TestCase;
@@ -31,6 +32,35 @@ public class HD3Test extends TestCase {
 			e.printStackTrace();
 		} 		
 	}
+	
+	@Test
+	public void testDeviceVendorsPass() {
+		List<String> vendors = 
+				new ArrayList<String>(Arrays.asList(new String[] { "Nokia", "Acer", "Samsung", "BlackBerry", "TechPad" }));	
+		hd3.deviceVendors();
+		try {
+			for(String vendor : vendors) {
+				assertTrue(this.jsonArrayToList(getJson(), "vendor", null, vendor));
+			}			
+		} catch(JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testDeviceVendorsFail() {
+		List<String> vendors = 
+				new ArrayList<String>(Arrays.asList(new String[] { "Oracle", "Linux", "Azure" }));	
+		hd3.deviceVendors();
+		try {
+			for(String vendor : vendors) {
+				assertFalse(this.jsonArrayToList(getJson(), "vendor", null, vendor));
+			}			
+		} catch(JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 	@Test
 	public void testuserCredentials() {
@@ -182,7 +212,7 @@ public class HD3Test extends TestCase {
 			e.printStackTrace();
 		}
 	} 
-		
+
 	@Ignore
 	private boolean jsonArrayToList(JSONObject json, String key1, String key2, String value) throws JSONException {
 		JSONArray jsonArray = (key2 == null) ? (JSONArray) json.get(key1) : 

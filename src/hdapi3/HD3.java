@@ -194,8 +194,8 @@ public class HD3 {
 	 *
 	 * @return true, if successful
 	 */
-	private boolean localDeviceVendors() {
-		JsonObject data = this.localGetSpecs();				
+	private synchronized boolean localDeviceVendors() {
+		JsonObject data = this.localGetSpecs();						
 		boolean ret = false;
 		if (data == null)
 			return ret;
@@ -225,7 +225,7 @@ public class HD3 {
 			ret = true;
 		} else {
 			this.createErrorReply(299, "Error: No devices data");
-		}
+		}		
 		return ret;				
 	}
 
@@ -246,7 +246,7 @@ public class HD3 {
 	 * @param vendor the vendor
 	 * @return true, if successful
 	 */
-	private boolean localDeviceModels(String vendor) {
+	private synchronized boolean localDeviceModels(String vendor) {
 		boolean ret = false;
 		JsonObject data = this.localGetSpecs();
 		if (data == null)
@@ -329,9 +329,9 @@ public class HD3 {
 	 * @param model the model
 	 * @return true, if successful
 	 */
-	private boolean localDeviceView(String vendor, String model) {
+	private synchronized boolean localDeviceView(String vendor, String model) {
 		boolean ret = false;
-		JsonObject data = this.localGetSpecs();
+		JsonObject data = this.localGetSpecs();		
 		if (data == null)
 			return ret;
 		JsonObject reply = new JsonObject();
@@ -389,7 +389,7 @@ public class HD3 {
 	 * @param value the value
 	 * @return true, if successful
 	 */
-	private boolean localDeviceWhatHas(String key, String value) {
+	private synchronized boolean localDeviceWhatHas(String key, String value) {
 		boolean ret = false;
 		JsonObject data = this.localGetSpecs();
 		if (data == null)
@@ -496,7 +496,7 @@ public class HD3 {
 	 *
 	 * @return true, if successful
 	 */
-	public boolean siteFetchArchive() {
+	public synchronized boolean siteFetchArchive() {
 		initRequest();
 		ByteArrayOutputStream reply = new ByteArrayOutputStream();
 		String zipFile;		
@@ -605,7 +605,7 @@ public class HD3 {
 	 *
 	 * @return true, if successful
 	 */
-	public boolean siteDetect() {
+	public synchronized boolean siteDetect() {
 		initRequest();
 		String id = getSiteId();
 		String header;
@@ -649,7 +649,7 @@ public class HD3 {
 	 *
 	 * @return true, if successful
 	 */
-	private boolean localSiteDetect() {
+	private synchronized boolean localSiteDetect() {
 		JsonObject device = null;
 		JsonObject specs = null;
 		
@@ -737,7 +737,7 @@ public class HD3 {
 	private JsonObject getCacheSpecs(String id, String type) {
 		if (HD3Util.isNullOrEmpty(id) || HD3Util.isNullOrEmpty(type)) return null;
 		StringBuilder cacheKey = new StringBuilder();
-		cacheKey.append(type).append(":").append(id);
+		cacheKey.append(type).append("_").append(id); //cacheKey.append(type).append(":").append(id);		
 		return getCache(cacheKey.toString());
 	}
 	
@@ -1007,10 +1007,10 @@ public class HD3 {
 	 * @param data the data
 	 * @return true, if successful
 	 */
-	private boolean remote(String service, JsonObject data) {
+	private boolean remote(String service, JsonObject data) {				
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		ByteArrayInputStream in = null;
-		boolean ret = false;
+		boolean ret = false;		
 		try {
 			if (this.post(data == null ? null : data.toString(), service, out) ) {
 				byte[] content = out.toByteArray();
@@ -1035,7 +1035,7 @@ public class HD3 {
 					}
 				} else {
 					this.setError("Error: No JsonObject in response.");
-				}	
+				}					
 			}			
 		} finally {
 			try {
@@ -1063,17 +1063,16 @@ public class HD3 {
 	 * @return true, if successful
 	 */
 	private boolean post(String data, String service, OutputStream response) {
-		boolean ret = false;
+		boolean ret = false;		
 		try {
-			String apiUrl = getApiServer();
+			String apiUrl = getApiServer();			
 			String contentLength = "0";
 			if (! HD3Util.isNullOrEmpty(data)) {
 				contentLength = Integer.toString(data.length());
-			}
-			
+			}			
 			StringBuilder sb = new StringBuilder();
 			sb.append(apiUrl.toString()).append("/").append(getRealm().toLowerCase()).append("/").append(service).append(".json");			
-			URL newURL = new URL(sb.toString());
+			URL newURL = new URL(sb.toString());			
 			URLConnection conn;
 			if (isUseProxy() && ! HD3Util.isNullOrEmpty(getProxyAddress())) {
 				Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(getProxyAddress(), getProxyPort()));
@@ -1084,25 +1083,25 @@ public class HD3 {
 			} else {
 				g_logger.fine("connecting to : " + newURL.toExternalForm());
 				conn = newURL.openConnection();
-			}
+			}			
 			conn.setConnectTimeout(getConnectTimeout() * 1000);
 			conn.setDoOutput(true);
 			conn.setRequestProperty("Content-Type", "application/json");
 			conn.setRequestProperty("Content-Length",contentLength);
 			conn.setRequestProperty("Authorization", getAuthorizationHeader(newURL));
 			conn.setReadTimeout(getReadTimeout() * 1000);			
-			OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+			OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());			
 			if (! HD3Util.isNullOrEmpty(data)) {
 				writer.write(data);
-			}			
+			}						
 			writer.flush();
-			writer.close();
+			writer.close();			
 			InputStream is = conn.getInputStream();
 			int bLength;
 			byte[] b = new byte[1024];
 			while ((bLength = is.read(b)) != -1) {
 				response.write(b, 0, bLength);
-			}		
+			}					
 			response.flush();
 			response.close();
 			is.close();
@@ -1175,8 +1174,8 @@ public class HD3 {
 		JsonObject reply = new JsonObject();
 		JsonElement data = null;
 		
-		File dir = new File(localFilesDirectory);
-		File [] fileList = dir.listFiles(); 
+		File dir = new File(localFilesDirectory);		
+		File [] fileList = dir.listFiles(); 		
 		if (fileList == null) {
 			createErrorReply(299, "Unable to list files in localFilesDirectory.");
 			return null;			
@@ -1187,12 +1186,12 @@ public class HD3 {
 
 		for (int i = 0; i < fileList.length; i++) {
 			if (fileList[i].isFile()) {
-				file = fileList[i].getName();
-				// If the file is in the cache already then grab it form there.
-		    	if (file.endsWith(".json") && file.startsWith("Device:")) {
-					String intValue = file.replaceAll("[a-zA-Z.:]", "");
-					data = getCacheSpecs(intValue, "Device");
-
+				file = fileList[i].getName();				
+				// If the file is in the cache already then grab it form there.		    	
+				if (file.endsWith(".json") && file.startsWith("Device_")) {					// Device:					
+		    		String intValue = file.replaceAll("[a-zA-Z._]", "");					// [a-zA-Z.:]
+					data = getCacheSpecs(intValue, "Device");			
+					System.out.println(data);
 	    			if (data == null || data.isJsonNull() || ! data.isJsonObject()) {
 	    				createErrorReply(299, "Unable to parse Device file : " + file);
 	    				return null;
@@ -1201,12 +1200,11 @@ public class HD3 {
 	    			}
 		    	}
 			}
-		}		
-		
+		}				
 		if (specs != null) {
 			reply.add("devices", specs);
 			this.m_specs = reply;
-		}
+		}		
 		return reply;
 	}
 	
@@ -1569,8 +1567,12 @@ public class HD3 {
 			
 			HD3 hd3 = new HD3();
 			hd3.setup(null, "127.0.0.1", "http://localhost");	
+
+			hd3.deviceVendors();
 			
-			if (hd3.deviceVendors()) {
+			System.out.println(hd3.getReply().toString());
+			
+		/*	if (hd3.deviceVendors()) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
@@ -1587,7 +1589,7 @@ public class HD3 {
 			} else {
 				g_logger.severe(hd3.getError());
 			} 
-			
+
 		    if (hd3.deviceWhatHas("general_vendor", "Nokia")) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
@@ -1614,7 +1616,7 @@ public class HD3 {
 				g_logger.fine("archive fetched.");
 			} else {
 				g_logger.severe(hd3.getError());
-			} 
+			} */
 
 		} catch (Exception ie) {
 			ie.printStackTrace();
