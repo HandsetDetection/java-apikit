@@ -1606,12 +1606,12 @@ public class HD3 {
 			} else {
 				g_logger.severe(hd3.getError());
 			} 
-		/*	
+			
 			if (hd3.siteFetchArchive()) {
 				g_logger.fine("archive fetched.");
 			} else {
 				g_logger.severe(hd3.getError());
-			} */
+			} 
 
 		} catch (Exception ie) {
 			ie.printStackTrace();
