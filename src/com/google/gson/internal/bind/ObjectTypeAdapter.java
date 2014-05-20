@@ -83,6 +83,8 @@ public final class ObjectTypeAdapter extends TypeAdapter<Object> {
     case NULL:
       in.nextNull();
       return null;
+	default:
+		break;
 
     }
     throw new IllegalStateException();

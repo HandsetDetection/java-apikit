@@ -30,7 +30,6 @@ import org.apache.commons.codec.binary.Base64;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 /* 
 * ****************************************************
 * * The HD3 class
@@ -194,7 +193,7 @@ public class HD3 {
 	 *
 	 * @return true, if successful
 	 */
-	private synchronized boolean localDeviceVendors() {
+	private boolean localDeviceVendors() {
 		JsonObject data = this.localGetSpecs();						
 		boolean ret = false;
 		if (data == null)
@@ -246,7 +245,7 @@ public class HD3 {
 	 * @param vendor the vendor
 	 * @return true, if successful
 	 */
-	private synchronized boolean localDeviceModels(String vendor) {
+	private boolean localDeviceModels(String vendor) {
 		boolean ret = false;
 		JsonObject data = this.localGetSpecs();
 		if (data == null)
@@ -329,7 +328,7 @@ public class HD3 {
 	 * @param model the model
 	 * @return true, if successful
 	 */
-	private synchronized boolean localDeviceView(String vendor, String model) {
+	private boolean localDeviceView(String vendor, String model) {
 		boolean ret = false;
 		JsonObject data = this.localGetSpecs();		
 		if (data == null)
@@ -389,7 +388,7 @@ public class HD3 {
 	 * @param value the value
 	 * @return true, if successful
 	 */
-	private synchronized boolean localDeviceWhatHas(String key, String value) {
+	private boolean localDeviceWhatHas(String key, String value) {
 		boolean ret = false;
 		JsonObject data = this.localGetSpecs();
 		if (data == null)
@@ -496,7 +495,7 @@ public class HD3 {
 	 *
 	 * @return true, if successful
 	 */
-	public synchronized boolean siteFetchArchive() {
+	public  boolean siteFetchArchive() {
 		initRequest();
 		ByteArrayOutputStream reply = new ByteArrayOutputStream();
 		String zipFile;		
@@ -565,16 +564,18 @@ public class HD3 {
 	        while (ze != null) {
 	        	String entryName = ze.getName().replace(':', '_');
 	            //g_logger.warning("Extracting " + entryName + " -> " + localFilesDirectory + File.separator +  entryName + "...");
-	            File f = new File(this.localFilesDirectory, entryName);	            
-		        // Create folders needed to store in correct relative path.
-	            f.getParentFile().mkdirs();
-	            FileOutputStream fos = new FileOutputStream(f);
-	            int len;
-	            byte buffer[] = new byte[1024];
-	            while ((len = zis.read(buffer)) > 0) {
-	                fos.write(buffer, 0, len);
-	            }
-	            fos.close();  
+	            File f = new File(this.localFilesDirectory, entryName);	        
+	            synchronized (f) {
+	            	 // Create folders needed to store in correct relative path.
+		            f.getParentFile().mkdirs();
+		            FileOutputStream fos = new FileOutputStream(f);
+		            int len;
+		            byte buffer[] = new byte[1024];
+		            while ((len = zis.read(buffer)) > 0) {
+		                fos.write(buffer, 0, len);
+		            }
+		            fos.close();  
+				}		       
 	            ze = zis.getNextEntry();
 	        }
 	        zis.closeEntry();
@@ -605,7 +606,7 @@ public class HD3 {
 	 *
 	 * @return true, if successful
 	 */
-	public synchronized boolean siteDetect() {
+	public boolean siteDetect() {
 		initRequest();
 		String id = getSiteId();
 		String header;
@@ -649,7 +650,7 @@ public class HD3 {
 	 *
 	 * @return true, if successful
 	 */
-	private synchronized boolean localSiteDetect() {
+	private boolean localSiteDetect() {
 		JsonObject device = null;
 		JsonObject specs = null;
 		

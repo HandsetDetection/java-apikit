@@ -25,6 +25,11 @@ package org.apache.commons.codec;
 public class DecoderException extends Exception {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
      * Creates a DecoderException
      * 
      * @param pMessage A message with meaning to a human
