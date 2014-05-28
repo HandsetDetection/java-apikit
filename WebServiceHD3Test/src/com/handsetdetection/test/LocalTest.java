@@ -112,12 +112,10 @@ public class LocalTest extends HttpServlet {
 				e1.printStackTrace();
 			}		
 		}
-		out.println("</table>");								 	   
-		long elapsed = System.currentTimeMillis() - start;
-		float elapsedTimeSec = elapsed/1000F;
-		int dps = (int) ((int) totalCount / elapsedTimeSec);							
+		out.println("</table>");								 	   									
 		long elapsedTime = System.currentTimeMillis() - start;		
 		float epalsedSec = elapsedTime/1000F;			
+		int dps = (int) ((int) totalCount / epalsedSec);	
 		out.println("<h1>Test Complete</h1>");
 		out.println("<h3>Elapsed time: "+epalsedSec+"ms, Total detections: "+totalCount+", Detections per second: "+dps+"</h3>");			    	    
 		try {
@@ -175,12 +173,10 @@ public class LocalTest extends HttpServlet {
 				e1.printStackTrace();
 			}		
 		}
-		out.println("</table>");								 	   
-		long elapsed = System.currentTimeMillis() - start;
-		float elapsedTimeSec = elapsed/1000F;
-		int dps = (int) ((int) totalCount / elapsedTimeSec);							
+		out.println("</table>");								 	   								
 		long elapsedTime = System.currentTimeMillis() - start;		
-		float epalsedSec = elapsedTime/1000F;				
+		float epalsedSec = elapsedTime/1000F;
+		int dps = (int) ((int) totalCount / epalsedSec);
 		out.println("<h1>Test Complete</h1>");
 		out.println("<h3>Elapsed time: "+epalsedSec+"ms, Total detections: "+totalCount+", Detections per second: "+dps+"</h3>");			    	    
 		try {
