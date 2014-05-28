@@ -659,8 +659,7 @@ public class HD3 {
 		if (fastReply instanceof JsonObject) {
 			this.m_reply = (JsonObject) fastReply;
 			return true;
-		} 
-		
+		} 		
 		JsonElement id = getDevice();
 		if (! HD3Util.isNullElement(id)) {
 			device = getCacheSpecs(id.getAsString(), JsonContants.DEVICE);
@@ -878,8 +877,8 @@ public class HD3 {
 
 		if (HD3Util.isNullOrEmpty(newValue) || newValue.length() < 4) {
 			return null;
-		}
-		JsonElement branch = getBranch(treeTag);
+		}		
+		JsonElement branch = getBranch(treeTag);		
 		if (HD3Util.isNullElement(branch)) return null;
 		if (JsonContants.USER_AGENT.equals(header)) {
 			if (branch.isJsonObject()) {
@@ -1608,11 +1607,11 @@ public class HD3 {
 				g_logger.severe(hd3.getError());
 			} 
 			
-			if (hd3.siteFetchArchive()) {
+			/*if (hd3.siteFetchArchive()) {
 				g_logger.fine("archive fetched.");
 			} else {
 				g_logger.severe(hd3.getError());
-			} 
+			} */
 
 		} catch (Exception ie) {
 			ie.printStackTrace();
