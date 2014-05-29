@@ -53,7 +53,7 @@ public class FetchArchiveTest extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		HD3 hd3 = new HD3();
 		
-		out.println("<h1>Fetching...</h1>");
+		out.println("<h1>Test complete!</h1>");
 		long start = System.currentTimeMillis();	
 		if (hd3.siteFetchArchive()) {
 			int size = hd3.getRawReply().length;
@@ -67,7 +67,7 @@ public class FetchArchiveTest extends HttpServlet {
 		long elapsedTime = System.currentTimeMillis() - start;		
 		float epalsedSec = elapsedTime/1000F;
 		out.println("Done.<br/>");
-		out.println("Elapsed time: " + epalsedSec);
+		out.println("Elapsed time: " + epalsedSec + "ms");
 		out.close();
 	}
 

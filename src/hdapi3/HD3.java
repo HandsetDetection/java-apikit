@@ -1062,7 +1062,7 @@ public class HD3 {
 	 * @param response the response
 	 * @return true, if successful
 	 */
-	private boolean post(String data, String service, OutputStream response) {
+	private boolean post(String data, String service, OutputStream response) {		
 		boolean ret = false;		
 		try {
 			String apiUrl = getApiServer();			
@@ -1605,13 +1605,12 @@ public class HD3 {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			} 
-			
-			/*if (hd3.siteFetchArchive()) {
+			} 	
+			if (hd3.siteFetchArchive()) {
 				g_logger.fine("archive fetched.");
 			} else {
 				g_logger.severe(hd3.getError());
-			} */
+			}
 
 		} catch (Exception ie) {
 			ie.printStackTrace();
