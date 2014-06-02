@@ -1,11 +1,15 @@
 package hdapi3;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
@@ -26,7 +30,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 import org.apache.commons.codec.binary.Base64;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -141,7 +147,7 @@ public class HD3 {
 		if (this.localFilesDirectory == null || this.localFilesDirectory == "" || this.localFilesDirectory.isEmpty())
 			this.localFilesDirectory = "files";
 
-		this.m_cache = HDCache.getInstance();
+		this.m_cache = HDCache.getInstance();				
 	}
 
 	/**
@@ -594,11 +600,11 @@ public class HD3 {
 	 * @param key the key
 	 * @param value the value
 	 */
-	public void addDetectVar(String key, String value) {
+	public void addDetectVar(String key, String value) {		
 		if (this.m_detectRequest == null) {
 			this.m_detectRequest = new JsonObject();
 		}
-		this.m_detectRequest.addProperty(key, value);
+		this.m_detectRequest.addProperty(key, value);		
 	}
 	
 	/**
@@ -608,7 +614,7 @@ public class HD3 {
 	 */
 	public boolean siteDetect() {
 		initRequest();
-		String id = getSiteId();
+		String id = getSiteId();				
 		String header;
 		boolean valid;
 
@@ -632,11 +638,10 @@ public class HD3 {
 		if (valid == false) {
 			this.createErrorReply(301, "FastFail : Probable bot, spider or script");
 			return false;
-		} 
-
+		} 		
 		if (isUseLocal()) {
-			//g_logger.fine("Starting local detecting with "+ m_detectRequest.toString());
-			boolean result = localSiteDetect();			
+			//g_logger.fine("Starting local detecting with "+ m_detectRequest.toString());			
+			boolean result = localSiteDetect();						
 			return result;
 		} else {
 			return remote("site/detect/" + id, this.m_detectRequest) 
@@ -652,23 +657,21 @@ public class HD3 {
 	 */
 	private boolean localSiteDetect() {
 		JsonObject device = null;
-		JsonObject specs = null;
-		
-		HashMap<String, String> headers = HD3Util.parseHeaders(m_detectRequest);
-		Object fastReply = m_cache.get(headers.toString());
+		JsonObject specs = null;		
+		HashMap<String, String> headers = HD3Util.parseHeaders(m_detectRequest);					
+		Object fastReply = m_cache.get(headers.toString());		
 		if (fastReply instanceof JsonObject) {
-			this.m_reply = (JsonObject) fastReply;
+			this.m_reply = (JsonObject) fastReply;			
 			return true;
-		} 		
-		JsonElement id = getDevice();
+		} 					
+		JsonElement id = getDevice();							
 		if (! HD3Util.isNullElement(id)) {
-			device = getCacheSpecs(id.getAsString(), JsonContants.DEVICE);
-			specs = (JsonObject) HD3Util.get("hd_specs", device);			
+			device = getCacheSpecs(id.getAsString(), JsonContants.DEVICE);			
+			specs = (JsonObject) HD3Util.get("hd_specs", device);				
 			if (specs == null) {
 				this.createErrorReply(299, "Malformed JSON Object Device:"+ id.toString());
 				return false;
-			}
-			
+			}			
 			JsonElement platformId = getExtra(JsonContants.PLATFORM);
 			JsonElement browserId = getExtra(JsonContants.BROWSER);
 			JsonObject platform = null;
@@ -677,7 +680,7 @@ public class HD3 {
 			String generalPlatformVersion = null;
 			String generalBrowser = null;
 			String generalBrowserVersion = null;
-
+						
 			if (! HD3Util.isNullElement(platformId)) {
 				platform = (JsonObject) getCacheSpecs(platformId.getAsString(), JsonContants.EXTRA);
 				generalPlatform = HD3Util.get(JsonContants.GENERAL_PLATFORM, platform).getAsString();
@@ -688,8 +691,7 @@ public class HD3 {
 				if (generalBrowser != null) {
 					generalBrowserVersion =HD3Util.get(JsonContants.GENERAL_BROWSER_VERSION, platform).getAsString();
 				}
-			}
-			
+			}			
 			if (! HD3Util.isNullElement(browserId)) {
 				browser = getCacheSpecs(browserId.getAsString(), JsonContants.EXTRA);
 				generalBrowser = HD3Util.get(JsonContants.GENERAL_BROWSER, browser).getAsString();
@@ -784,9 +786,9 @@ public class HD3 {
 	 *
 	 * @return the device
 	 */
-	private JsonElement getDevice() {
-		String agent = null;
-		HashMap<String, String> headers = HD3Util.parseHeaders(m_detectRequest);
+	private JsonElement getDevice() {		
+		String agent = null;		
+		HashMap<String, String> headers = HD3Util.parseHeaders(m_detectRequest);		
 		if (!HD3Util.isNullOrEmpty(headers.get(JsonContants.X_OPERAMINI_PHONE))
 				&&!"? # ?".equals(headers.get(JsonContants.X_OPERAMINI_PHONE))) {
 			JsonElement id = matchDevice(JsonContants.X_OPERAMINI_PHONE, headers.get(JsonContants.X_OPERAMINI_PHONE));
@@ -834,9 +836,8 @@ public class HD3 {
 				JsonElement id = matchDevice(JsonContants.USER_AGENT, headers.get(header));
 				if (!HD3Util.isNullElement(id)) return id;
 			}
-		}
-		return matchDevice(JsonContants.USER_AGENT, agent, 1);
-		
+		}				
+		return matchDevice(JsonContants.USER_AGENT, agent, 1);		
 	}
 	
 	/**
@@ -861,7 +862,7 @@ public class HD3 {
 	private JsonElement matchDevice(String header, String value, int generic) {
 		if (HD3Util.isNullOrEmpty(value)) return null;
 		value = value.toLowerCase().replaceAll(getMatchFilter(), "");
-		String treeTag = header + generic;
+		String treeTag = header + generic;		
 		return match(header, value, treeTag);
 	}
 	
@@ -873,18 +874,17 @@ public class HD3 {
 	 * @param treeTag the tree tag
 	 * @return the json element
 	 */
-	private JsonElement match(String header, String newValue, String treeTag) {
-
+	private JsonElement match(String header, String newValue, String treeTag) {		
 		if (HD3Util.isNullOrEmpty(newValue) || newValue.length() < 4) {
 			return null;
 		}		
 		JsonElement branch = getBranch(treeTag);		
 		if (HD3Util.isNullElement(branch)) return null;
-		if (JsonContants.USER_AGENT.equals(header)) {
+		if (JsonContants.USER_AGENT.equals(header)) {	
 			if (branch.isJsonObject()) {
 				JsonObject branchObj = (JsonObject) branch;
 				Set<Map.Entry<String, JsonElement>> branchEntries = branchObj.entrySet();
-				Iterator<Map.Entry<String, JsonElement>> branchIter = branchEntries.iterator();
+				Iterator<Map.Entry<String, JsonElement>> branchIter = branchEntries.iterator();				
 				while (branchIter.hasNext()) {
 					Map.Entry<String, JsonElement> branchItem = branchIter.next();
 					//String order = branchItem.getKey();
@@ -897,18 +897,18 @@ public class HD3 {
 						while (filterIter.hasNext()) {
 							Map.Entry<String, JsonElement> filterItem = filterIter.next();
 							String filter = filterItem.getKey();
-							//g_logger.fine("filter : " + filter);
-							if (newValue.indexOf(filter) >= 0) {
+							//g_logger.fine("filter : " + filter);							
+							if (newValue.indexOf(filter) >= 0) {								
 								JsonElement matchesElem = filterItem.getValue();
 								if (matchesElem instanceof JsonObject) {
-									JsonObject matchesObj = (JsonObject) matchesElem;
+									JsonObject matchesObj = (JsonObject) matchesElem;									
 									Set<Map.Entry<String, JsonElement>> matchesEntries = matchesObj.entrySet();
 									Iterator<Map.Entry<String, JsonElement>> matchesIter = matchesEntries.iterator();
 									while (matchesIter.hasNext()) {
 										Map.Entry<String, JsonElement> matchItem = matchesIter.next();
-										String match = matchItem.getKey();
+										String match = matchItem.getKey();										
 										//g_logger.fine("match : " + match);
-										JsonElement nodeElem = matchItem.getValue();
+										JsonElement nodeElem = matchItem.getValue();										
 										if (newValue.indexOf(match) >= 0) {
 											//g_logger.fine("matched : " + newValue);
 											return nodeElem;
@@ -1536,11 +1536,11 @@ public class HD3 {
 	 * @param nonMobile the new non mobile
 	 */
 	public void setNonMobile(String nonMobile) { this.nonMobile = nonMobile; }
-
+	
 	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
+	 * 
+	 * 
+	 * @param args
 	 */
 	public static void main(String[] args) {
 		Logger topLogger = java.util.logging.Logger.getLogger("");
@@ -1562,41 +1562,48 @@ public class HD3 {
 		try {
 			FileInputStream fis = new FileInputStream("hdapi_config.properties");
 			Settings.init(fis);
-			fis.close();
+			fis.close();			
 			
 			HD3 hd3 = new HD3();
-			hd3.setup(null, "127.0.0.1", "http://localhost");	
-			
+			hd3.setup(null, "127.0.0.1", "http://localhost");
+						
 			if (hd3.deviceVendors()) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			} 
+			}
 			
 			if (hd3.deviceModels("Nokia")) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
 			}
-			
+
 			if (hd3.deviceView("Nokia", "660")) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			} 
-
+			}
+			
 		    if (hd3.deviceWhatHas("general_vendor", "Nokia")) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			} 
+			}
 	    			
 			hd3.addDetectVar("user-agent", "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95/12.0.013; Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413");
 			if (hd3.siteDetect()) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			} 
+			}
+			
+			hd3.addDetectVar("user-agent", "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95/12.0.013; Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413");
+			if (hd3.siteDetect()) {
+				g_logger.fine(hd3.getReply().toString());
+			} else {
+				g_logger.severe(hd3.getError());
+			}
 			
 			hd3.addDetectVar("user-agent", "Opera/9.80 (Android; OperaMini/7.0.29952/28.2144; U; pt) Presto/2.8.119 Version/11.10");
 			hd3.addDetectVar("x-operamini-phone", "Android #");
@@ -1605,16 +1612,17 @@ public class HD3 {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			} 	
+			}
+
 			if (hd3.siteFetchArchive()) {
 				g_logger.fine("archive fetched.");
 			} else {
 				g_logger.severe(hd3.getError());
-			}
-
+			}	
 		} catch (Exception ie) {
 			ie.printStackTrace();
 			g_logger.severe(ie.getMessage());
 		}
 	}
+	
 }

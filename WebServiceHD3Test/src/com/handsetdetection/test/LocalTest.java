@@ -38,13 +38,9 @@ public class LocalTest extends HttpServlet {
      * @see HttpServlet#HttpServlet()
      */
     public LocalTest() {
-        super();
-        // TODO Auto-generated constructor stub
+        super();        
     }
-    
-    private JsonElement normal = null;
-	private JsonElement mobile = null;
-
+        
 	private void setupData() {
 		this.file =  getServletContext().getResourceAsStream("/WEB-INF/headers.txt");
 	}
@@ -56,20 +52,20 @@ public class LocalTest extends HttpServlet {
 		Utility.initHDAPISettings(this.getServletContext());
 		setupData();
 		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
-		this.header(out);
-		HashMap<String, String> headers = Utility.getRequestHeaders(request);		
-		// Same instance of the object
+		PrintWriter out = response.getWriter();		
+		HashMap<String, String> headers = Utility.getRequestHeaders(request);				
 		singleNewHD3(out, headers, request);		
 		out.close();
 	}
 	
 	private void singleNewHD3(PrintWriter out, HashMap<String, String> headers, HttpServletRequest request) {				
-		int totalCount = 0;				
+		int totalCount = 0;			
+		out.println("<h1>Single Instance</h1>");
+		this.header(out);
 		long start = System.currentTimeMillis();						
 		InputStreamReader isr = new InputStreamReader(this.file);
 		BufferedReader reader = new BufferedReader(isr);	  
-		String text = "";		
+		String text = "";				
 		try {
 			while ((text = reader.readLine()) != null) {				
 				String[] string_headers = text.split("\\|", -1);
@@ -79,7 +75,8 @@ public class LocalTest extends HttpServlet {
 					out.println("<tr>");
 					HD3 hd = new HD3();
 					hd.setup(headers, request.getRemoteAddr(), request.getRequestURI());
-					hd.addDetectVar(userAgent, profile);
+					hd.addDetectVar("user-agent", userAgent);
+					hd.addDetectVar("x-wap-profile", profile);
 					if(hd.siteDetect()) {					
 						try {
 							JSONObject json = new JSONObject(hd.getReply().toString());							
@@ -114,10 +111,10 @@ public class LocalTest extends HttpServlet {
 		}
 		out.println("</table>");								 	   									
 		long elapsedTime = System.currentTimeMillis() - start;		
-		float epalsedSec = elapsedTime/1000F;			
-		int dps = (int) ((int) totalCount / epalsedSec);	
+		float elapsedSec = elapsedTime/1000F;			
+		int dps = (int) ((int) totalCount / elapsedSec);	
 		out.println("<h1>Test Complete</h1>");
-		out.println("<h3>Elapsed time: "+epalsedSec+"ms, Total detections: "+totalCount+", Detections per second: "+dps+"</h3>");			    	    
+		out.println("<h3>Elapsed time: "+elapsedSec+"s, Total detections: "+totalCount+", Detections per second: "+dps+"</h3>");			    	    
 		try {
 			file.close();
 		} catch (IOException e) {			
@@ -129,6 +126,8 @@ public class LocalTest extends HttpServlet {
 		HD3 hd = new HD3();
 		hd.setup(headers, request.getRemoteAddr(), request.getRequestURI());		
 		int totalCount = 0;				
+		out.println("<h1>Multiple Instance</h1>");
+		this.header(out);
 		long start = System.currentTimeMillis();	
 		InputStreamReader isr = new InputStreamReader(this.file);
 		BufferedReader reader = new BufferedReader(isr);	  		
@@ -140,7 +139,8 @@ public class LocalTest extends HttpServlet {
 				String profile = string_headers[1];
 				for(int j = 0; j < 10; j++)  {		
 					out.println("<tr>");
-					hd.addDetectVar(userAgent, profile);
+					hd.addDetectVar("user-agent", userAgent);
+					hd.addDetectVar("x-wap-profile", profile);
 					if(hd.siteDetect()) {					
 						try {
 							JSONObject json = new JSONObject(hd.getReply().toString());							
@@ -175,10 +175,10 @@ public class LocalTest extends HttpServlet {
 		}
 		out.println("</table>");								 	   								
 		long elapsedTime = System.currentTimeMillis() - start;		
-		float epalsedSec = elapsedTime/1000F;
-		int dps = (int) ((int) totalCount / epalsedSec);
+		float elapsedSec = elapsedTime/1000F;
+		int dps = (int) ((int) totalCount / elapsedSec);
 		out.println("<h1>Test Complete</h1>");
-		out.println("<h3>Elapsed time: "+epalsedSec+"ms, Total detections: "+totalCount+", Detections per second: "+dps+"</h3>");			    	    
+		out.println("<h3>Elapsed time: "+elapsedSec+"s, Total detections: "+totalCount+", Detections per second: "+dps+"</h3>");			    	    
 		try {
 			file.close();
 		} catch (IOException e) {			

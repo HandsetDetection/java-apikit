@@ -64,13 +64,13 @@ public class HDCache {
 		Object reply;
 		reply = HDCACHED_OBJECTS.getIfPresent(key);
 		return reply;
-	}
+	}	
 	
 	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 * @throws Exception the exception
+	 * 
+	 * 
+	 * @param args
+	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception{
 		final HDCache myCache = new HDCache();
@@ -112,7 +112,6 @@ public class HDCache {
 		System.out.println(myCache.get("k6"));
 		System.out.println(myCache.get("k7"));
 		System.out.println(myCache.get("k8"));
-		System.out.println(myCache.get("k9"));
-		
+		System.out.println(myCache.get("k9"));		
 	}
 }
