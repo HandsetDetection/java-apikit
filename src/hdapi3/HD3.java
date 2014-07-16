@@ -199,7 +199,7 @@ public class HD3 {
 	 *
 	 * @return true, if successful
 	 */
-	private boolean localDeviceVendors() {
+	private synchronized boolean localDeviceVendors() {
 		JsonObject data = this.localGetSpecs();						
 		boolean ret = false;
 		if (data == null)
@@ -251,7 +251,7 @@ public class HD3 {
 	 * @param vendor the vendor
 	 * @return true, if successful
 	 */
-	private boolean localDeviceModels(String vendor) {
+	private synchronized boolean localDeviceModels(String vendor) {
 		boolean ret = false;
 		JsonObject data = this.localGetSpecs();
 		if (data == null)
@@ -334,7 +334,7 @@ public class HD3 {
 	 * @param model the model
 	 * @return true, if successful
 	 */
-	private boolean localDeviceView(String vendor, String model) {
+	private synchronized boolean localDeviceView(String vendor, String model) {
 		boolean ret = false;
 		JsonObject data = this.localGetSpecs();		
 		if (data == null)
@@ -394,7 +394,7 @@ public class HD3 {
 	 * @param value the value
 	 * @return true, if successful
 	 */
-	private boolean localDeviceWhatHas(String key, String value) {
+	private synchronized boolean localDeviceWhatHas(String key, String value) {
 		boolean ret = false;
 		JsonObject data = this.localGetSpecs();
 		if (data == null)
@@ -501,7 +501,7 @@ public class HD3 {
 	 *
 	 * @return true, if successful
 	 */
-	public  boolean siteFetchArchive() {
+	public synchronized boolean siteFetchArchive() {
 		initRequest();
 		ByteArrayOutputStream reply = new ByteArrayOutputStream();
 		String zipFile;		
@@ -584,7 +584,7 @@ public class HD3 {
 				}		       
 	            ze = zis.getNextEntry();
 	        }
-	        zis.closeEntry();
+	        zis.closeEntry();	        
 	        zis.close();
 		} catch (Exception e) {
 			this.createErrorReply(299, "Failed to unzip archive.", e.getMessage());
@@ -612,7 +612,7 @@ public class HD3 {
 	 *
 	 * @return true, if successful
 	 */
-	public boolean siteDetect() {
+	public synchronized boolean siteDetect() {
 		initRequest();
 		String id = getSiteId();				
 		String header;
@@ -655,7 +655,7 @@ public class HD3 {
 	 *
 	 * @return true, if successful
 	 */
-	private boolean localSiteDetect() {
+	private synchronized boolean localSiteDetect() {
 		JsonObject device = null;
 		JsonObject specs = null;		
 		HashMap<String, String> headers = HD3Util.parseHeaders(m_detectRequest);					
@@ -749,7 +749,7 @@ public class HD3 {
 	 * @param key the key
 	 * @return the cache
 	 */
-	private JsonObject getCache(String key) {
+	private synchronized JsonObject getCache(String key) {
 		if (HD3Util.isNullOrEmpty(key)) return null; 
 
 		// Try read from memory cache
@@ -786,7 +786,7 @@ public class HD3 {
 	 *
 	 * @return the device
 	 */
-	private JsonElement getDevice() {		
+	private synchronized JsonElement getDevice() {		
 		String agent = null;		
 		HashMap<String, String> headers = HD3Util.parseHeaders(m_detectRequest);		
 		if (!HD3Util.isNullOrEmpty(headers.get(JsonContants.X_OPERAMINI_PHONE))
@@ -874,7 +874,7 @@ public class HD3 {
 	 * @param treeTag the tree tag
 	 * @return the json element
 	 */
-	private JsonElement match(String header, String newValue, String treeTag) {		
+	private synchronized JsonElement match(String header, String newValue, String treeTag) {		
 		if (HD3Util.isNullOrEmpty(newValue) || newValue.length() < 4) {
 			return null;
 		}		
@@ -918,8 +918,7 @@ public class HD3 {
 							}
 						}
 						
-					}
-					//if ()
+					}					
 				}
 			}
 		} else {
@@ -948,7 +947,7 @@ public class HD3 {
 	 * @param classKey the class key
 	 * @return the extra
 	 */
-	private JsonElement getExtra(String classKey) {
+	private synchronized JsonElement getExtra(String classKey) {
 		HashMap<String, String> headers = HD3Util.parseHeaders(m_detectRequest);
 		ArrayList<String> checkOrder = new ArrayList<String>();
 		if (JsonContants.PLATFORM.equals(classKey)) {
@@ -977,7 +976,7 @@ public class HD3 {
 	 * @param classKey the class key
 	 * @return the json element
 	 */
-	private JsonElement matchExtra(String header ,String value, String classKey) {
+	private synchronized JsonElement matchExtra(String header ,String value, String classKey) {
 		value = value.toLowerCase().replaceAll(" ", "");
 		String treeTag = header + classKey;
 		return match(header, value, treeTag);
@@ -1007,7 +1006,7 @@ public class HD3 {
 	 * @param data the data
 	 * @return true, if successful
 	 */
-	private boolean remote(String service, JsonObject data) {				
+	private synchronized boolean remote(String service, JsonObject data) {				
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		ByteArrayInputStream in = null;
 		boolean ret = false;		
@@ -1062,7 +1061,7 @@ public class HD3 {
 	 * @param response the response
 	 * @return true, if successful
 	 */
-	private boolean post(String data, String service, OutputStream response) {		
+	private synchronized boolean post(String data, String service, OutputStream response) {		
 		boolean ret = false;		
 		try {
 			String apiUrl = getApiServer();			
@@ -1119,7 +1118,7 @@ public class HD3 {
 	 * @return the authorization header
 	 * @throws Exception the exception
 	 */
-	private String getAuthorizationHeader(URL requestUrl)
+	private synchronized String getAuthorizationHeader(URL requestUrl)
 			throws Exception {
 		String nc = "00000001";
 		String snonce = "APIv3";
@@ -1161,14 +1160,13 @@ public class HD3 {
 		sb.append(new String(Base64.encodeBase64((new String(getProxyUsername() + ":" + getProxyPassword())).getBytes())));
 		return sb.toString();
 	}
-	
-	// Build up the full devices tree
+		
 	/**
 	 * Local get specs.
 	 *
 	 * @return the json object
 	 */
-	public JsonObject localGetSpecs()  {
+	public synchronized JsonObject localGetSpecs()  {
 		String file;
 		JsonArray specs = new JsonArray();
 		JsonObject reply = new JsonObject();
@@ -1612,7 +1610,7 @@ public class HD3 {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			}
+			} 
 
 			if (hd3.siteFetchArchive()) {
 				g_logger.fine("archive fetched.");
