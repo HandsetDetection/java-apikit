@@ -1,5 +1,7 @@
 package hdapi3;
 
+import hd3.SecretConfig;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,15 +14,21 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -32,10 +40,17 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.Ignore;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 /* 
 * ****************************************************
 * * The HD3 class
@@ -664,10 +679,12 @@ public class HD3 {
 			this.m_reply = (JsonObject) fastReply;			
 			return true;
 		} 					
-		JsonElement id = getDevice();							
+		JsonElement id = getDevice();									
 		if (! HD3Util.isNullElement(id)) {
-			device = getCacheSpecs(id.getAsString(), JsonContants.DEVICE);			
-			specs = (JsonObject) HD3Util.get("hd_specs", device);				
+			device = getCacheSpecs(id.getAsString(), JsonContants.DEVICE);		
+									
+			specs = (JsonObject) HD3Util.get("hd_specs", device);			
+			
 			if (specs == null) {
 				this.createErrorReply(299, "Malformed JSON Object Device:"+ id.toString());
 				return false;
@@ -680,16 +697,16 @@ public class HD3 {
 			String generalPlatformVersion = null;
 			String generalBrowser = null;
 			String generalBrowserVersion = null;
-						
+												
 			if (! HD3Util.isNullElement(platformId)) {
-				platform = (JsonObject) getCacheSpecs(platformId.getAsString(), JsonContants.EXTRA);
-				generalPlatform = HD3Util.get(JsonContants.GENERAL_PLATFORM, platform).getAsString();
+				platform = (JsonObject) getCacheSpecs(platformId.getAsString(), JsonContants.EXTRA);				
+				generalPlatform = HD3Util.get(JsonContants.GENERAL_PLATFORM, platform).getAsString();				
 				if (generalPlatform != null) {
-					generalPlatformVersion = HD3Util.get(JsonContants.GENERAL_PLATFORM_VERSION, platform).getAsString();				
+					generalPlatformVersion = HD3Util.get(JsonContants.GENERAL_PLATFORM_VERSION, platform).getAsString();					
 				}
-				generalBrowser = HD3Util.get(JsonContants.GENERAL_BROWSER, platform).getAsString();
+				generalBrowser = HD3Util.get(JsonContants.GENERAL_BROWSER, platform).getAsString();								
 				if (generalBrowser != null) {
-					generalBrowserVersion =HD3Util.get(JsonContants.GENERAL_BROWSER_VERSION, platform).getAsString();
+					generalBrowserVersion =HD3Util.get(JsonContants.GENERAL_BROWSER_VERSION, platform).getAsString();					
 				}
 			}			
 			if (! HD3Util.isNullElement(browserId)) {
@@ -698,7 +715,7 @@ public class HD3 {
 				if (generalBrowser != null) {
 					generalBrowserVersion = HD3Util.get(JsonContants.GENERAL_BROWSER_VERSION, browser).getAsString();
 				}
-			}
+			}									
 
 			if (generalPlatform != null) {
 				specs.addProperty(JsonContants.GENERAL_PLATFORM, generalPlatform);
@@ -714,6 +731,9 @@ public class HD3 {
 			}
 			
 			this.m_reply = new JsonObject();
+			
+			
+			
 			this.m_reply.add("hd_specs", specs);
 			m_reply.addProperty(JsonContants.STATUS, 0);
 			m_reply.addProperty(JsonContants.MESSAGE, "OK");
@@ -721,7 +741,7 @@ public class HD3 {
 				m_reply.addProperty(JsonContants.CLASS_ATTR, "Unknown");
 			} else {
 				m_reply.addProperty(JsonContants.CLASS_ATTR, specs.get(JsonContants.GENERAL_TYPE).getAsString());
-			}
+			}			
 			m_cache.put(headers.toString(), this.m_reply);
 			return true;
 		}
@@ -736,10 +756,10 @@ public class HD3 {
 	 * @param type the type
 	 * @return the cache specs
 	 */
-	private JsonObject getCacheSpecs(String id, String type) {
+	private JsonObject getCacheSpecs(String id, String type) {		
 		if (HD3Util.isNullOrEmpty(id) || HD3Util.isNullOrEmpty(type)) return null;
 		StringBuilder cacheKey = new StringBuilder();
-		cacheKey.append(type).append("_").append(id); //cacheKey.append(type).append(":").append(id);		
+		cacheKey.append(type).append("_").append(id); //cacheKey.append(type).append(":").append(id);					
 		return getCache(cacheKey.toString());
 	}
 	
@@ -749,26 +769,26 @@ public class HD3 {
 	 * @param key the key
 	 * @return the cache
 	 */
-	private synchronized JsonObject getCache(String key) {
+	private synchronized JsonObject getCache(String key) {		
 		if (HD3Util.isNullOrEmpty(key)) return null; 
 
 		// Try read from memory cache
-		Object cacheReply = (Object) m_cache.get(key);
+		Object cacheReply = (Object) m_cache.get(key);		
 		if (cacheReply instanceof JsonObject) {
-			JsonObject ret = (JsonObject) cacheReply;
+			JsonObject ret = (JsonObject) cacheReply;			
 			return ret;
 		} 
 
 		// Try read from disk blob
 		try {
 			StringBuilder cacheKeyFile = new StringBuilder(key);
-			cacheKeyFile.append(".json");
+			cacheKeyFile.append(".json");			
 			File f = new File(this.localFilesDirectory, cacheKeyFile.toString());
 			if (f.exists()) {
 				FileInputStream fis = new FileInputStream(f);
-				JsonElement element = HD3Util.parseJson(fis);
+				JsonElement element = HD3Util.parseJson(fis);				
 				JsonObject fileReply = element.getAsJsonObject();
-				m_cache.put(key, fileReply);
+				m_cache.put(key, fileReply);				
 				fis.close();
 				return fileReply;
 			}
@@ -1556,15 +1576,15 @@ public class HD3 {
 		// set the console handler to fine:
 		consoleHandler.setLevel(java.util.logging.Level.FINEST);
 		g_logger.setLevel(Level.FINEST);
-		
-		try {
+				
+		try {					
 			FileInputStream fis = new FileInputStream("hdapi_config.properties");
 			Settings.init(fis);
 			fis.close();			
 			
 			HD3 hd3 = new HD3();
 			hd3.setup(null, "127.0.0.1", "http://localhost");
-						
+			
 			if (hd3.deviceVendors()) {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
@@ -1592,7 +1612,7 @@ public class HD3 {
 			hd3.addDetectVar("user-agent", "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95/12.0.013; Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413");
 			if (hd3.siteDetect()) {
 				g_logger.fine(hd3.getReply().toString());
-			} else {
+			} else {	
 				g_logger.severe(hd3.getError());
 			}
 			
@@ -1616,11 +1636,46 @@ public class HD3 {
 				g_logger.fine("archive fetched.");
 			} else {
 				g_logger.severe(hd3.getError());
-			}	
+			}
 		} catch (Exception ie) {
 			ie.printStackTrace();
 			g_logger.severe(ie.getMessage());
-		}
+		}	
 	}
-	
+				
+	private static void printJson(JsonElement jsonElement, JsonElement secondElement) {
+		// Check whether jsonElement is JsonObject or not
+        if (jsonElement.isJsonObject()) {
+            Set<Entry<String, JsonElement>> ens = ((JsonObject) jsonElement).entrySet();
+            Set<Entry<String, JsonElement>> ens2 = ((JsonObject) secondElement).entrySet();
+            if (ens != null) {
+                // Iterate JSON Elements with Key values
+                for (Entry<String, JsonElement> en : ens) {
+                    System.out.print(en.getKey() + " : ");
+                    printJson(en.getValue(), null);                	                          
+                }
+            }
+        } 
+        
+        // Check whether jsonElement is Arrary or not
+        else if (jsonElement.isJsonArray()) {
+                    JsonArray jarr = jsonElement.getAsJsonArray();
+                    // Iterate JSON Array to JSON Elements
+                    for (JsonElement je : jarr) {
+                        printJson(je, null);
+                    }
+        }
+        
+        // Check whether jsonElement is NULL or not
+        else if (jsonElement.isJsonNull()) {
+            // print null
+            System.out.println("null");
+        } 
+        // Check whether jsonElement is Primitive or not
+        else if (jsonElement.isJsonPrimitive()) {
+            // print value as String
+            System.out.println(jsonElement.getAsString());
+        } 
+	}
+		
 }
