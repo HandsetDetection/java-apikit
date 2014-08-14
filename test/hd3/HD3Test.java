@@ -12,18 +12,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Map.Entry;
-
 import junit.framework.TestCase;
 import hdapi3.HD3;
 import hdapi3.HD3Util;
 import hdapi3.Settings;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -158,48 +155,8 @@ public class HD3Test extends TestCase {
 			+ "\"media_audio\":[\"MP3\",\"AAC\",\"AAC+\",\"WMA\"],"
 			+ "\"media_other\":[\"Geo-tagging\"],"
 			+ "\"features\":[\"Unlimited entries\",\"Caller groups\",\"Multiple numbers per contact\",\"Search by both first and last name\",\"Picture ID\",\"Ring ID\",\"Calendar\",\"Alarm\",\"Calculator\",\"Computer sync\",\"OTA sync\",\"Music ringtones (MP3)\",\"Polyphonic ringtones (64 voices)\",\"Vibration\",\"Flight mode\",\"Silent mode\",\"Speakerphone\",\"Accelerometer\",\"Compass\",\"Voice recording\",\"SMS\",\"MMS\",\"Email\",\"Push Email\",\"IM\",\"Stereo FM radio with RDS\",\"SNS integration\",\"Google Search\",\"Maps\",\"Gmail\",\"YouTube\",\"Google Talk\",\"Picasa integration\",\"Organizer\",\"Document viewer\",\"Voice memo\",\"Voice dialing\",\"Predictive text input\",\"Games\"],"
-			+ "\"connectors\":[\"USB 2.0\",\"miniUSB\",\"3.5mm Headphone\"]}";
-	
-	private String AlcatelOT_90822 = "{\"general_vendor\":\"Alcatel\","
-			+ "\"general_model\":\"OT-908\","
-			+ "\"general_platform\":\"Android\","
-			+ "\"general_platform_version\":\"2.2\","
-			+ "\"general_browser\":\"\","
-			+ "\"general_browser_version\":\"\","
-			+ "\"general_image\":\"\","
-			+ "\"general_aliases\":[\"Alcatel One Touch 908\"],"
-			+ "\"general_eusar\":\"\","
-			+ "\"general_battery\":[\"Li-Ion 1300 mAh\"],"
-			+ "\"general_type\":\"Mobile\","
-			+ "\"general_cpu\":[\"600Mhz\"],"
-			+ "\"design_formfactor\":\"Bar\","
-			+ "\"design_dimensions\":\"110 x 57.4 x 12.4\","
-			+ "\"design_weight\":\"120\","
-			+ "\"design_antenna\":\"Internal\","
-			+ "\"design_keyboard\":\"Screen\","
-			+ "\"design_softkeys\":\"\","
-			+ "\"design_sidekeys\":[\"Lock/Unlock\",\"Volume\"],"
-			+ "\"display_type\":\"TFT\","
-			+ "\"display_color\":\"Yes\","
-			+ "\"display_colors\":\"262K\","
-			+ "\"display_size\":\"2.8\\\"\","
-			+ "\"display_x\":\"240\","
-			+ "\"display_y\":\"320\","
-			+ "\"display_other\":[\"Capacitive\",\"Touch\",\"Multitouch\"],"
-			+ "\"memory_internal\":[\"150MB\"],"				
-			+ "\"memory_slot\":[\"microSD\",\"microSDHC\",\"32GB\",\"2GB\"],"
-			+ "\"network\":[\"GSM850\",\"GSM900\",\"GSM1800\",\"GSM1900\",\"UMTS900\",\"UMTS2100\",\"HSDPA900\",\"HSDPA2100\",\"Bluetooth 3.0\",\"802.11b\",\"802.11g\",\"802.11n\",\"GPRS Class 12\",\"EDGE Class 12\"],"
-			+ "\"media_camera\":[\"2MP\",\"1600x1200\"],"
-			+ "\"media_secondcamera\":[],"
-			+ "\"media_videocapture\":[\"Yes\"],"
-			+ "\"media_videoplayback\":[\"MPEG4\",\"H.263\",\"H.264\"],"
-			+ "\"media_audio\":[\"MP3\",\"AAC\",\"AAC+\",\"WMA\"],"
-			+ "\"media_other\":[\"Geo-tagging\"],"
-			+ "\"features\":[\"Unlimited entries\",\"Caller groups\",\"Multiple numbers per contact\",\"Search by both first and last name\",\"Picture ID\",\"Ring ID\",\"Calendar\",\"Alarm\",\"Calculator\",\"Computer sync\",\"OTA sync\",\"Music ringtones (MP3)\",\"Polyphonic ringtones (64 voices)\",\"Vibration\",\"Flight mode\",\"Silent mode\",\"Speakerphone\",\"Accelerometer\",\"Compass\",\"Voice recording\",\"SMS\",\"MMS\",\"Email\",\"Push Email\",\"IM\",\"Stereo FM radio with RDS\",\"SNS integration\",\"Google Search\",\"Maps\",\"Gmail\",\"YouTube\",\"Google Talk\",\"Picasa integration\",\"Organizer\",\"Document viewer\",\"Voice memo\",\"Voice dialing\",\"Predictive text input\",\"Games\"],"
 			+ "\"connectors\":[\"USB 2.0\",\"microUSB\",\"3.5mm Headphone\"]}";
-											
 	
-
 	private String SamsungSCH_M828C = "{\"general_vendor\":\"Samsung\","
 			+ "\"general_model\":\"SCH-M828C'\","
 			+ "\"general_platform\":\"Android\","
@@ -238,6 +195,44 @@ public class HD3Test extends TestCase {
 			+ "\"features\":[\"Unlimited entries\",\"Caller groups\",\"Multiple numbers per contact\",\"Search by both first and last name\",\"Picture ID\",\"Ring ID\",\"Calendar\",\"Alarm\",\"Document viewer\",\"Calculator\",\"Computer sync\",\"OTA sync\",\"Music ringtones (MP3)\",\"Polyphonic ringtones\",\"Vibration\",\"Flight mode\",\"Silent mode\",\"Speakerphone\",\"Accelerometer\",\"Voice dialing\",\"Voice recording\",\"SMS\",\"Threaded viewer\",\"MMS\",\"Email\",\"Push Email\",\"IM\",\"Organizer\",\"Google Search\",\"Maps\",\"Gmail\",\"YouTube\",\"Google Talk\",\"Picasa integration\",\"Voice memo\",\"Predictive text input (Swype)\",\"Games\"],"
 			+ "\"connectors\":[\"USB 2.0\",\"microUSB\",\"3.5mm Headphone\"]}";
 	
+	private String AlcatelOT_90822 = "{\"general_vendor\":\"Alcatel\","
+			+ "\"general_model\":\"OT-908\","
+			+ "\"general_platform\":\"Android\","
+			+ "\"general_platform_version\":\"2.2\","
+			+ "\"general_browser\":\"\","
+			+ "\"general_browser_version\":\"\","
+			+ "\"general_image\":\"\","
+			+ "\"general_aliases\":[\"Alcatel One Touch 908\"],"
+			+ "\"general_eusar\":\"\","
+			+ "\"general_battery\":[\"Li-Ion 1300 mAh\"],"
+			+ "\"general_type\":\"Mobile\","
+			+ "\"general_cpu\":[\"600Mhz\"],"
+			+ "\"design_formfactor\":\"Bar\","
+			+ "\"design_dimensions\":\"110 x 57.4 x 12.4\","
+			+ "\"design_weight\":\"120\","
+			+ "\"design_antenna\":\"Internal\","
+			+ "\"design_keyboard\":\"Screen\","
+			+ "\"design_softkeys\":\"\","
+			+ "\"design_sidekeys\":[\"Lock/Unlock\",\"Volume\"],"
+			+ "\"display_type\":\"TFT\","
+			+ "\"display_color\":\"Yes\","
+			+ "\"display_colors\":\"262K\","
+			+ "\"display_size\":\"2.8\\\"\","
+			+ "\"display_x\":\"240\","
+			+ "\"display_y\":\"320\","
+			+ "\"display_other\":[\"Capacitive\",\"Touch\",\"Multitouch\"],"
+			+ "\"memory_internal\":[\"150MB\"],"				
+			+ "\"memory_slot\":[\"microSD\",\"microSDHC\",\"32GB\",\"2GB\"],"
+			+ "\"network\":[\"GSM850\",\"GSM900\",\"GSM1800\",\"GSM1900\",\"UMTS900\",\"UMTS2100\",\"HSDPA900\",\"HSDPA2100\",\"Bluetooth 3.0\",\"802.11b\",\"802.11g\",\"802.11n\",\"GPRS Class 12\",\"EDGE Class 12\"],"
+			+ "\"media_camera\":[\"2MP\",\"1600x1200\"],"
+			+ "\"media_secondcamera\":[],"
+			+ "\"media_videocapture\":[\"Yes\"],"
+			+ "\"media_videoplayback\":[\"MPEG4\",\"H.263\",\"H.264\"],"
+			+ "\"media_audio\":[\"MP3\",\"AAC\",\"AAC+\",\"WMA\"],"
+			+ "\"media_other\":[\"Geo-tagging\"],"
+			+ "\"features\":[\"Unlimited entries\",\"Caller groups\",\"Multiple numbers per contact\",\"Search by both first and last name\",\"Picture ID\",\"Ring ID\",\"Calendar\",\"Alarm\",\"Calculator\",\"Computer sync\",\"OTA sync\",\"Music ringtones (MP3)\",\"Polyphonic ringtones (64 voices)\",\"Vibration\",\"Flight mode\",\"Silent mode\",\"Speakerphone\",\"Accelerometer\",\"Compass\",\"Voice recording\",\"SMS\",\"MMS\",\"Email\",\"Push Email\",\"IM\",\"Stereo FM radio with RDS\",\"SNS integration\",\"Google Search\",\"Maps\",\"Gmail\",\"YouTube\",\"Google Talk\",\"Picasa integration\",\"Organizer\",\"Document viewer\",\"Voice memo\",\"Voice dialing\",\"Predictive text input\",\"Games\"],"
+			+ "\"connectors\":[\"USB 2.0\",\"microUSB\",\"3.5mm Headphone\"]}";
+													
 	private String SamsungGT_P1000 = "{\"general_vendor\":\"Samsung\","
 			+ "\"general_model\":\"GT-P1000'\","
 			+ "\"general_platform\":\"Android\","
@@ -430,6 +425,16 @@ public class HD3Test extends TestCase {
 			+ "\"features\":[\"300 entries\",\"Multiple numbers per contact\",\"Picture ID\",\"Ring ID\",\"Calendar\",\"Alarm\",\"To-Do\",\"Calculator\",\"Stopwatch\",\"SMS\",\"T9\",\"Computer sync\",\"Polyphonic ringtones (32 voices)\",\"Vibration\",\"Voice dialing (Speaker independent)\",\"Voice recording\",\"TTY\\/TDD\",\"Games\"],"
 			+ "\"connectors\":[\"USB\"]}}}";
 	
+	private Map<String, String> headers = new HashMap<String, String>(){{		
+		put("AlcatelOT-908222", AlcatelOT_908222);
+		put("SamsungSCH-M828C", SamsungSCH_M828C);
+		put("AlcatelOT-90822", AlcatelOT_90822);		
+		put("SamsungGT-P1000", SamsungGT_P1000);
+		put("GenericOperaMini", GenericOperaMini);
+		put("AppleiPhone", AppleiPhone);
+		put("SonyEricssonX10I", SonyEricssonX10I);
+	}};
+	
 	protected void setUp() {		
 		try {
 			fis = new FileInputStream("hdapi_config.properties"); 
@@ -543,8 +548,8 @@ public class HD3Test extends TestCase {
 				new ArrayList<String>(Arrays.asList(new String[] { "Apple", "Sony", "Samsung", "Nokia", "LG", "HTC", "Karbonn" }));
 		hd3.setUseLocal(local);
 		hd3.setUseProxy(proxy);	
-		boolean dv = hd3.deviceVendors();
-		assertTrue(dv);
+		boolean reply = hd3.deviceVendors();
+		assertTrue(reply);
 		JsonObject data = hd3.getReply();					
 		assertEquals("\"OK\"", HD3Util.get("message", data).toString());
 		assertEquals(0, HD3Util.get("status", data).getAsInt());	
@@ -595,6 +600,7 @@ public class HD3Test extends TestCase {
 		assertTrue(reply);
 		assertEquals("\"OK\"", HD3Util.get("message", data).toString());
 		assertEquals(0, HD3Util.get("status", data).getAsInt());
+		this.testCompareDevices((JsonObject) new JsonParser().parse(nokiaN95), (JsonObject) HD3Util.get("device", data));
 	} 
 	
 	public void deviceWhatHas(boolean local, boolean proxy) {
@@ -615,8 +621,7 @@ public class HD3Test extends TestCase {
 			assertEquals(true, list.indexOf(spec) > 0 ? true : false);			
 		}
 	}
-	
-	
+		
 	@Test
 	public void testDeviceVendorsNokia() {				
 		hd3.deviceVendors();		
@@ -668,33 +673,7 @@ public class HD3Test extends TestCase {
 			e.printStackTrace();
 		}	
 	}
-	
-	@Test
-	public void testDeviceViewNokiaLumia() {					 
-		hd3.deviceView("Nokia", "Lumia 610 NFC");		
-		try {			
-			assertEquals(HD3Util.get("general_platform", hd3.getReply()).getAsString(), "Windows Phone");
-			assertEquals(HD3Util.get("general_model", hd3.getReply()).getAsString(), "Lumia 610 NFC");		
-			assertTrue( this.jsonArrayToList( getJson(), "device", "display_other", "Gorilla Glass"));	
-			assertTrue( this.jsonArrayToList( getJson(), "device", "display_other", "Multitouch"));
-		} catch (JSONException e) {			
-			e.printStackTrace();
-		}				
-	}
-	
-	@Test
-	public void testDeviceViewAppleIPhone5S() {					 
-		hd3.deviceView("Apple", "iPhone 5S");
-		assertEquals(HD3Util.get("design_dimensions", hd3.getReply()).getAsString(), "123.8 x 58.6 x 7.6");
-		assertEquals(HD3Util.get("display_colors", hd3.getReply()).getAsString(), "16M");			
-		try {			
-			assertTrue( this.jsonArrayToList(getJson(), "device", "features", "Ambient Light Sensor") );
-			assertTrue( this.jsonArrayToList(getJson(), "device", "connectors", "Lightning Connector") );
-		} catch (JSONException e) {			
-			e.printStackTrace();
-		}				
-	}		
-	
+			
 	@Test
 	public void siteDetect(boolean local, boolean proxy) {
 		hd3.setUseLocal(local);
@@ -706,8 +685,9 @@ public class HD3Test extends TestCase {
 			assertFalse(reply);
 			assertEquals(301, HD3Util.get("status", data).getAsInt());						
 		}			
-		Iterator<Entry<String, Map<String, String>>> entries = map.entrySet().iterator(); 
-		while(entries.hasNext()) {
+		Iterator<Entry<String, Map<String, String>>> entries = map.entrySet().iterator(); 		
+		Iterator<Entry<String, String>> ih = headers.entrySet().iterator();
+		while(entries.hasNext() || ih.hasNext()) {
 			Map.Entry<String, Map<String, String>> entry = (Entry<String, Map<String, String>>) entries.next();		
 			if(entry.getValue().get("user-agent") != null) {
 				hd3.addDetectVar("user-agent", entry.getValue().get("user-agent"));
@@ -718,6 +698,15 @@ public class HD3Test extends TestCase {
 			assertEquals(true, reply);
 			assertEquals(0, HD3Util.get("status", data).getAsInt());
 			assertEquals("\"OK\"", HD3Util.get("message", data).toString());
+			assertEquals(HD3Util.get("class", data).getAsString(), HD3Util.get("general_type", data).getAsString() );											
+			Map.Entry<String, String> mp = (Map.Entry<String, String>) ih.next();
+			String key = mp.getKey().toString();
+			String value = mp.getValue().toString();			
+			if(key.equals(entry.getValue().get("match").toString())) {			
+				JsonObject jsonObject1 = (JsonObject) HD3Util.get("hd_specs", data);
+				JsonObject jsonObject2 = (JsonObject) new JsonParser().parse(value);						
+				this.testCompareDevices(jsonObject1, jsonObject2);
+			}
 		}		
 	}
 	
@@ -759,7 +748,9 @@ public class HD3Test extends TestCase {
 	public void testCloudApiCalls() {	
 		this.deviceVendors(false, false);
 		this.deviceModels(false, false);
-		this.deviceView(false, false);				
+		this.deviceView(false, false);			
+		this.deviceWhatHas(false, false);
+		this.siteDetect(false, false);
 	}
 	
 	@Test
@@ -782,7 +773,14 @@ public class HD3Test extends TestCase {
 		hd3.setUseLocal(true);
 		hd3.setUseProxy(false);
 		hd3.setReadTimeout(120);		
-		hd3.siteFetchArchive();
+		hd3.setLocalFilesDirectory("tmp");		
+		boolean reply = hd3.siteFetchTrees();
+		assertTrue(reply);
+		assertEquals(true, new File(hd3.getLocalFilesDirectory(), "hd3trees.json").exists());
+		String[] devices = { "user-agent0.json", "user-agent1.json", "user-agentplatform.json", "user-agentbrowser.json", "profile0.json" };
+		for(String device : devices) {
+			assertEquals(true, new File("files", device).exists());
+		}
 	}
 	
 	@Test
@@ -790,9 +788,12 @@ public class HD3Test extends TestCase {
 		hd3.setUsername("bob");
 		hd3.setSecret("cowcowcow");
 		hd3.setSiteId("76");
+		hd3.setLocalFilesDirectory("tmp");
 		hd3.setReadTimeout(120);
 		hd3.setUseLocal(true);
 		hd3.setUseProxy(false);				
+		boolean reply = hd3.siteFetchTrees();
+		TestCase.assertEquals(false, reply);
 	}
 	
 	@Test
@@ -800,6 +801,20 @@ public class HD3Test extends TestCase {
 		hd3.setUseLocal(true);
 		hd3.setUseProxy(false);		
 		hd3.setReadTimeout(120);
+		hd3.setLocalFilesDirectory("tmp");		
+		boolean reply = hd3.siteFetchSpecs();
+		assertTrue(reply);
+		assertEquals(true, new File(hd3.getLocalFilesDirectory(), "hd3specs.json").exists());
+		String[] devices = { "Device_10.json", "Extra_546.json", "Device_46142.json", "Extra_9.json",  "Extra_102.json", "user-agent0.json", "user-agent1.json", "user-agentplatform.json", "user-agentbrowser.json", "profile0.json" };
+		for(String device : devices) {
+			assertEquals(true, new File("files", device).exists());
+		}
+		try {
+			String content = new Scanner(new File("files", "device_10.json"), "UTF-8").useDelimiter("\\A").next();
+			assertEquals(new JsonParser().parse(content).toString(), new JsonParser().parse(this.Device_10).toString());
+		} catch (FileNotFoundException e) {			
+			e.printStackTrace();
+		}
 	}
 	
 	@Test
@@ -810,6 +825,8 @@ public class HD3Test extends TestCase {
 		hd3.setReadTimeout(120);
 		hd3.setUseLocal(true);
 		hd3.setUseProxy(false);
+		boolean reply = hd3.siteFetchSpecs();
+		assertEquals(false, reply);
 	}
 	
 	@Test
@@ -839,6 +856,35 @@ public class HD3Test extends TestCase {
 		this.deviceWhatHas(true, false);
 		this.siteDetect(true, false);
 	}
+	
+	@Test
+	public void testCompareDevices(JsonObject json1, JsonObject json2) {
+		Iterator<Entry<String, JsonElement>> iterator1 = json1.entrySet().iterator();
+		Iterator<Entry<String, JsonElement>> iterator2 = json2.entrySet().iterator();
+		while(iterator1.hasNext() && iterator2.hasNext()) {
+			Entry<String,JsonElement> entries1 = (Entry<String,JsonElement>) iterator1.next();		
+			Entry<String,JsonElement> entries2 = (Entry<String,JsonElement>) iterator2.next();
+			JsonElement element1 = entries1.getValue();								
+			JsonElement element2 = entries2.getValue();
+			if(!element1.isJsonArray() && !element2.isJsonArray()) {
+				String value1 = entries1.getValue().getAsString();
+				String value2 = entries1.getValue().getAsString();															
+				assertEquals(value1, value2);
+				if(value1.equals(value2) && element1.isJsonArray() && element2.isJsonArray()) {
+					JsonArray jarr = element1.getAsJsonArray();
+					JsonArray jarr2 = element2.getAsJsonArray();			
+					Iterator<JsonElement> it1 = jarr.iterator();
+					Iterator<JsonElement> it2 = jarr2.iterator();
+					while(it1.hasNext() && it2.hasNext()) {
+						JsonElement je1 = it1.next();
+						JsonElement je2 = it2.next();											
+						assertEquals(je1.getAsString(), je2.getAsString());
+					}
+				}
+			} 
+		}
+	}
+	
 	
 	@Ignore
 	private boolean jsonArrayToList(JSONObject json, String key1, String key2, String value) throws JSONException {

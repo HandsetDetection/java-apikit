@@ -1,34 +1,22 @@
 package hdapi3;
 
-import hd3.SecretConfig;
-
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.StringReader;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -38,19 +26,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import org.apache.commons.codec.binary.Base64;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Ignore;
-
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 /* 
 * ****************************************************
 * * The HD3 class
@@ -512,6 +491,122 @@ public class HD3 {
 	}
 	
 	/**
+	 * Site fetch specs.
+	 *
+	 * @return true, if successful
+	 */
+	public synchronized boolean siteFetchTrees() {
+		initRequest();
+		ByteArrayOutputStream reply = new ByteArrayOutputStream();
+		this.getFilesDirectory();
+		String directoryFile = this.localFilesDirectory + File.separator + "hd3trees.json";		
+		try {
+			// Increase the timeout, because the default of 5 seconds just isnt enough.
+			// Note : Errors will be JSON documents whereas the Archive will be a ZIP file.
+			int saveConnectTimeout = getConnectTimeout();
+			int saveReadTimeout = getReadTimeout();
+			setConnectTimeout(Math.max(saveConnectTimeout, 450));
+			setReadTimeout(Math.max(saveReadTimeout, 450));						
+			if (this.post(null, "site/fetchtrees/" + getSiteId(), reply) == true) {				
+				setConnectTimeout(saveConnectTimeout);
+				setReadTimeout(saveReadTimeout);				
+				if (reply.size() < 100) {
+					this.createErrorReply(299, "Failed to download trees properly. File is zero size.");
+					return false;				
+				} else {
+					try {
+						byte[] content = reply.toByteArray();
+						this.m_rawReply = content;						
+						ByteArrayInputStream in = new ByteArrayInputStream(content);
+						JsonObject response = (JsonObject) HD3Util.parseJson(in);	
+						if (response.isJsonObject()) {
+							FileOutputStream stream = new FileOutputStream(directoryFile);
+							try {
+							    stream.write(content);
+								stream.flush();
+							} finally {
+							    stream.close();
+							}
+						}
+					} catch (Exception e) {
+						if (reply.size() < 800000) {
+							this.createErrorReply(299, "Failed to download trees properly. File is too small.");
+							return false;										
+						}						
+					}
+				}					
+			} else {
+				setConnectTimeout(saveConnectTimeout);
+				setReadTimeout(saveReadTimeout);
+				this.createErrorReply(200, "API : AuthMethod digest. Error : Unknown User");
+				return false;
+			}
+		} catch (Exception e) {
+			this.createErrorReply(299, "Failed to download trees.", e.getMessage());
+			//return false;
+		}		
+		return true;
+	}
+	
+	/**
+	 * Site fetch specs.
+	 *
+	 * @return true, if successful
+	 */
+	public synchronized boolean siteFetchSpecs() {
+		initRequest();
+		ByteArrayOutputStream reply = new ByteArrayOutputStream();
+		this.getFilesDirectory();
+		String directoryFile = this.localFilesDirectory + File.separator + "hd3specs.json";		
+		try {
+			// Increase the timeout, because the default of 5 seconds just isnt enough.
+			// Note : Errors will be JSON documents whereas the Archive will be a ZIP file.
+			int saveConnectTimeout = getConnectTimeout();
+			int saveReadTimeout = getReadTimeout();
+			setConnectTimeout(Math.max(saveConnectTimeout, 450));
+			setReadTimeout(Math.max(saveReadTimeout, 450));
+			if (this.post(null, "site/fetchspecs/" + getSiteId(), reply) == true) {
+				setConnectTimeout(saveConnectTimeout);
+				setReadTimeout(saveReadTimeout);
+				if (reply.size() < 100) {
+					this.createErrorReply(299, "Failed to download specs properly. File is zero size.");
+					return false;				
+				} else {
+					try {
+						byte[] content = reply.toByteArray();
+						this.m_rawReply = content;						
+						ByteArrayInputStream in = new ByteArrayInputStream(content);
+						JsonObject response = (JsonObject) HD3Util.parseJson(in);	
+						if (response.isJsonObject()) {
+							FileOutputStream stream = new FileOutputStream(directoryFile);
+							try {
+							    stream.write(content);
+								stream.flush();
+							} finally {
+							    stream.close();
+							}
+						}
+					} catch (Exception e) {
+						if (reply.size() < 800000) {
+							this.createErrorReply(299, "Failed to download specs properly. File is too small.");
+							return false;										
+						}						
+					}
+				}								
+			} else {
+				setConnectTimeout(saveConnectTimeout);
+				setReadTimeout(saveReadTimeout);
+				this.createErrorReply(200, "API : AuthMethod digest. Error : Unknown User");
+				return false;
+			}
+		} catch (Exception e) {
+			this.createErrorReply(299, "Failed to download specs.", e.getMessage());
+			return false;
+		}
+		return true;
+	}
+	
+	/**
 	 * Site fetch archive.
 	 *
 	 * @return true, if successful
@@ -530,10 +625,10 @@ public class HD3 {
 			setConnectTimeout(Math.max(saveConnectTimeout, 450));
 			setReadTimeout(Math.max(saveReadTimeout, 450));
 
-			if (this.post(null, "site/fetcharchive/" + getSiteId(), reply)) {
+			if (this.post(null, "site/fetcharchive/" + getSiteId(), reply) == true) {
 				setConnectTimeout(saveConnectTimeout);
 				setReadTimeout(saveReadTimeout);
-				if (reply.size() == 0) {
+				if (reply.size() < 100) {
 					this.createErrorReply(299, "Failed to download archive properly. File is zero size.");
 					return false;				
 				} else {
@@ -569,7 +664,7 @@ public class HD3 {
 			} else {
 				setConnectTimeout(saveConnectTimeout);
 				setReadTimeout(saveReadTimeout);
-				this.createErrorReply(299, "Failed to download archive.");
+				this.createErrorReply(200, "API : AuthMethod digest. Error : Unknown User");
 				return false;
 			}
 		} catch (Exception e) {
@@ -1096,8 +1191,8 @@ public class HD3 {
 			if (isUseProxy() && ! HD3Util.isNullOrEmpty(getProxyAddress())) {
 				Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(getProxyAddress(), getProxyPort()));
 				conn = newURL.openConnection(proxy);
-				if (! HD3Util.isNullOrEmpty(getProxyUsername())) {
-					conn.setRequestProperty("Proxy-Authorization", getBasicProxyPass());
+				if (! HD3Util.isNullOrEmpty(getProxyUsername())) {					
+					conn.setRequestProperty("Proxy-Authorization", getBasicProxyPass());					
 				}
 			} else {
 				g_logger.fine("connecting to : " + newURL.toExternalForm());
@@ -1123,12 +1218,12 @@ public class HD3 {
 			}					
 			response.flush();
 			response.close();
-			is.close();
-			return ret = true;
+			is.close();			
+			ret = true;
 		} catch (Exception ex) {
-			g_logger.warning("Exception occured while trying to access " + ex.getLocalizedMessage());
-		}
-		return ret;
+			g_logger.warning("Exception occured while trying to access " + ex.getLocalizedMessage());			
+		}		
+		return ret;		
 	}
 
 	/**
@@ -1269,6 +1364,13 @@ public class HD3 {
 		this.m_rawReply = null;
 		setError("");
 	}
+	
+	/**
+	 * Gets the directory.
+	 *
+	 * @return the localFilesDirectory
+	 */
+	public String getLocalFilesDirectory() { return this.localFilesDirectory; }
 
 	/**
 	 * Gets the realm.
@@ -1418,6 +1520,13 @@ public class HD3 {
 	public String getNonMobile() { return nonMobile; }
 	
 	/**
+	 * Sets the directory.
+	 *
+	 * @param directory the new directory
+	 */
+	public void setLocalFilesDirectory(String directory) { this.localFilesDirectory = directory; }
+	
+	/**
 	 * Sets the realm.
 	 *
 	 * @param realm the new realm
@@ -1553,7 +1662,7 @@ public class HD3 {
 	 *
 	 * @param nonMobile the new non mobile
 	 */
-	public void setNonMobile(String nonMobile) { this.nonMobile = nonMobile; }
+	public void setNonMobile(String nonMobile) { this.nonMobile = nonMobile; }		
 	
 	/**
 	 * 
@@ -1580,9 +1689,10 @@ public class HD3 {
 		try {					
 			FileInputStream fis = new FileInputStream("hdapi_config.properties");
 			Settings.init(fis);
-			fis.close();			
+			fis.close();				
 			
 			HD3 hd3 = new HD3();
+			
 			hd3.setup(null, "127.0.0.1", "http://localhost");
 			
 			if (hd3.deviceVendors()) {
@@ -1631,51 +1741,25 @@ public class HD3 {
 			} else {
 				g_logger.severe(hd3.getError());
 			} 
-
+			if (hd3.siteFetchTrees()) {
+				g_logger.fine("trees fetched.");
+			} else {
+				g_logger.severe(hd3.getError());
+			}
+			if (hd3.siteFetchSpecs()) {
+				g_logger.fine("specs fetched.");
+			} else {
+				g_logger.severe(hd3.getError());
+			}
 			if (hd3.siteFetchArchive()) {
 				g_logger.fine("archive fetched.");
 			} else {
 				g_logger.severe(hd3.getError());
-			}
+			} 
 		} catch (Exception ie) {
 			ie.printStackTrace();
 			g_logger.severe(ie.getMessage());
 		}	
-	}
-				
-	private static void printJson(JsonElement jsonElement, JsonElement secondElement) {
-		// Check whether jsonElement is JsonObject or not
-        if (jsonElement.isJsonObject()) {
-            Set<Entry<String, JsonElement>> ens = ((JsonObject) jsonElement).entrySet();
-            Set<Entry<String, JsonElement>> ens2 = ((JsonObject) secondElement).entrySet();
-            if (ens != null) {
-                // Iterate JSON Elements with Key values
-                for (Entry<String, JsonElement> en : ens) {
-                    System.out.print(en.getKey() + " : ");
-                    printJson(en.getValue(), null);                	                          
-                }
-            }
-        } 
-        
-        // Check whether jsonElement is Arrary or not
-        else if (jsonElement.isJsonArray()) {
-                    JsonArray jarr = jsonElement.getAsJsonArray();
-                    // Iterate JSON Array to JSON Elements
-                    for (JsonElement je : jarr) {
-                        printJson(je, null);
-                    }
-        }
-        
-        // Check whether jsonElement is NULL or not
-        else if (jsonElement.isJsonNull()) {
-            // print null
-            System.out.println("null");
-        } 
-        // Check whether jsonElement is Primitive or not
-        else if (jsonElement.isJsonPrimitive()) {
-            // print value as String
-            System.out.println(jsonElement.getAsString());
-        } 
 	}
 		
 }
