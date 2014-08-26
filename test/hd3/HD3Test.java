@@ -454,18 +454,29 @@ public class HD3Test extends TestCase {
 		} 		
 	}
 	
+	/**
+	 * Test for runtime exception
+     * @expectedException Exception
+     */
 	@Test
 	public void testUsernameRequired() {
 		hd3.setUsername("");		
 		assertEquals("",hd3.getUsername());
 	}
 	
+	/**
+	 * Test for runtime exception
+     * @expectedException Exception
+     */
 	@Test
 	public void testSecretRequired() {
 		hd3.setSecret("");
 		assertEquals("",hd3.getSecret());
 	}	
 	
+	/**
+	 * Test for a config passed to the constructor
+     */
 	@Test
 	public void testPassedConfig() {			
 		hd3.setUsername("jones");
@@ -484,6 +495,9 @@ public class HD3Test extends TestCase {
 		assertEquals(hd3.getProxyPassword(), "123abc");
 	}
 	
+	/**
+	 * Test for default config readon from config file
+	 */
 	@Test
 	public void testDefaultFileConfig() {
 		hd3.setUseProxy(false);
@@ -494,6 +508,9 @@ public class HD3Test extends TestCase {
 		assertNotNull(hd3.getApiServer());
 	}
 	
+	/**
+	 * Test for default http headers read when a new object is instantiated
+	 */
 	@Test
 	public void testDefaultSetup() {
 		String header = "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95-3/20.2.011 Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413";
@@ -516,6 +533,9 @@ public class HD3Test extends TestCase {
 		assertEquals(data.get("ipaddress"), HD3Util.get("ipaddress", result));		
 	}
 	
+	/**
+	 * Test for manual setting of http headers
+	 */
 	@Test
 	public void testManualSetup() {
 		String header = "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95-3/20.2.011 Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413";
@@ -530,6 +550,9 @@ public class HD3Test extends TestCase {
 		assertEquals(json.get("x-wap-profile"), HD3Util.get("x-wap-profile", result));
 	}
 	
+	/**
+	 * Test for invalis API credentials
+	 */
 	@Test
 	public void testInvalidCredentials() {
 		hd3.setUsername(SecretConfig.getUserName("jones"));
@@ -541,7 +564,15 @@ public class HD3Test extends TestCase {
 		assertEquals("200", HD3Util.get("status", hd3.getReply()).toString() );
 	} 
 	
-		
+	/**
+	 * Test for deviceVendors
+	 *
+	 * The list is continually growing so ensure its a min length and common vendors are present
+	 *
+	 * @param bool local : True if running in local mode, false otherwise
+	 * @param bool proxy : True if using proxy for API queries
+	 * @return void
+	 */	
 	@Test
 	public void deviceVendors(boolean local, boolean proxy) {
 		List<String> vendors = 
@@ -563,7 +594,13 @@ public class HD3Test extends TestCase {
 			e.printStackTrace();
 		}
 	}
-		
+	/**
+	 * Test for deviceVendors
+	 *
+	 * The list is continually growing so ensure its a min length and common vendors are present
+	 *
+	 * @return void
+	 */
 	@Test
 	public void testDeviceVendorsFail() {
 		List<String> vendors = 
@@ -578,6 +615,15 @@ public class HD3Test extends TestCase {
 		}
 	} 
 	
+	/**
+	 * Test for deviceModels
+	 *
+	 * This list is also continually growing so ensure its a minimum length
+	 * 
+ 	 * @param bool local : True if running in local mode, false otherwise
+	 * @param bool proxy : True if using proxy for API queries
+	 * @return void
+	 */
 	@Test
 	public void deviceModels(boolean local, boolean proxy) {
 		hd3.setUseLocal(local);
@@ -591,6 +637,15 @@ public class HD3Test extends TestCase {
 		assertEquals(0, HD3Util.get("status", data).getAsInt());
 	}
 	
+	/**
+	 * Test for deviceView
+	 *
+	 * View detailed information about one device
+	 * 
+	 * @param bool local : True if running in local mode, false otherwise
+	 * @param bool proxy : True if using proxy for API queries
+	 * @return void
+	 */
 	@Test
 	public void deviceView(boolean local, boolean proxy) {
 		hd3.setUseLocal(local);
@@ -603,6 +658,16 @@ public class HD3Test extends TestCase {
 		this.testCompareDevices((JsonObject) new JsonParser().parse(nokiaN95), (JsonObject) HD3Util.get("device", data));
 	} 
 	
+	/**
+	 * Test for deviceWhatHas
+	 *
+	 * Find which devices have a specific property	 
+	 *
+	 * @param bool local : True if running in local mode, false otherwise
+	 * @param bool proxy : True if using proxy for API queries
+	 * @return void
+	 */
+	@Test
 	public void deviceWhatHas(boolean local, boolean proxy) {
 		hd3.setUseLocal(local);
 		hd3.setUseProxy(proxy);		
@@ -621,7 +686,13 @@ public class HD3Test extends TestCase {
 			assertEquals(true, list.indexOf(spec) > 0 ? true : false);			
 		}
 	}
-		
+	
+	/**
+	 * Test Mobile device vendor nokia
+	 *
+	 * @param void
+	 * @return void
+	 */
 	@Test
 	public void testDeviceVendorsNokia() {				
 		hd3.deviceVendors();		
@@ -631,7 +702,13 @@ public class HD3Test extends TestCase {
 			e.printStackTrace();
 		}	
 	}
-
+	
+	/**
+	 * Test Mobile device vendor LG
+	 *
+	 * @param void
+	 * @return void
+	 */
 	@Test
 	public void testDeviceVendorsLG() {				
 		hd3.deviceVendors();		
@@ -642,6 +719,12 @@ public class HD3Test extends TestCase {
 		}	
 	}
 	
+	/**
+	 * Test Mobile device vendor samsung
+	 *
+	 * @param void
+	 * @return void
+	 */
 	@Test
 	public void testDeviceVendorsSamsung() {				
 		hd3.deviceVendors();	
@@ -652,6 +735,12 @@ public class HD3Test extends TestCase {
 		}	
 	}
 	
+	/**
+	 * Test Mobile device nokia
+	 *
+	 * @param void
+	 * @return void
+	 */
 	@Test
 	public void testDeviceModelsNokia() {
 		hd3.deviceModels("Nokia");		
@@ -663,6 +752,12 @@ public class HD3Test extends TestCase {
 		}	
 	}
 	
+	/**
+	 * Test Mobile device samsung
+	 *
+	 * @param void
+	 * @return void
+	 */
 	@Test
 	public void testDeviceModelsSamsung() {
 		hd3.deviceModels("Samsung");
@@ -673,7 +768,15 @@ public class HD3Test extends TestCase {
 			e.printStackTrace();
 		}	
 	}
-			
+	
+	/**
+	 * Perform a battery of detection tests
+	 *	 
+	 *
+	 * @param bool local : True if running in local mode, false otherwise
+	 * @param bool proxy : True if using proxy for API queries
+	 * @return void
+	 */
 	@Test
 	public void siteDetect(boolean local, boolean proxy) {
 		hd3.setUseLocal(local);
@@ -710,6 +813,12 @@ public class HD3Test extends TestCase {
 		}		
 	}
 	
+	/**
+	 * Test browser
+	 *
+	 * @param void
+	 * @return void
+	 */
 	@Test
 	public void testSiteDetectBrowser() {
 		hd3.addDetectVar("user-agent", "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95/12.0.013; Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413");
@@ -725,7 +834,13 @@ public class HD3Test extends TestCase {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Test browser opera mini
+	 *
+	 * @param void
+	 * @return void
+	 */
 	@Test
 	public void testSiteDetectXOperaMini() {
 		hd3.addDetectVar("user-agent", "Opera/9.80 (Android; OperaMini/7.0.29952/28.2144; U; pt) Presto/2.8.119 Version/11.10");
@@ -744,6 +859,12 @@ public class HD3Test extends TestCase {
 		}
 	} 
 	
+	/**
+	 * Runs the Api tests against the Cloud web service
+	 *
+	 * @param void
+	 * @return void
+	 */
 	@Test
 	public void testCloudApiCalls() {	
 		this.deviceVendors(false, false);
@@ -753,6 +874,12 @@ public class HD3Test extends TestCase {
 		this.siteDetect(false, false);
 	}
 	
+	/**
+	 * Runs the same tests as testCloudApiCalls() but through a proxy
+	 * 
+	 * @param void
+	 * @return void
+	 */
 	@Test
 	public void testCloudProxyApiCalls() {
 		hd3.setUseLocal(false);
@@ -767,7 +894,13 @@ public class HD3Test extends TestCase {
 		this.deviceWhatHas(false, true);
 		this.siteDetect(false, true);
 	}
-
+	
+	/**
+	 * Test fetching the detection trees	 	
+	 *
+	 * @param void
+	 * @return void
+	 */
 	@Test
 	public void testUltimateFetchTrees() {
 		hd3.setUseLocal(true);
@@ -783,6 +916,13 @@ public class HD3Test extends TestCase {
 		}
 	}
 	
+	/**
+	 * Test invalid credentials for accessing fetchTrees 
+	 *	 
+	 * 
+	 * @param void
+	 * @return void
+	 */
 	@Test
 	public void testUltimateFetchTreesFail() {
 		hd3.setUsername("bob");
@@ -796,6 +936,12 @@ public class HD3Test extends TestCase {
 		TestCase.assertEquals(false, reply);
 	}
 	
+	/**
+	 * Fetch the device specs	 
+	 * 
+	 * @param void
+	 * @return void
+	 */
 	@Test
 	public void testUltimateFetchSpecs() {
 		hd3.setUseLocal(true);
@@ -817,6 +963,12 @@ public class HD3Test extends TestCase {
 		}
 	}
 	
+	/**
+	 * Test invalid credentials for accessing fetchSpecs 	 	
+	 * 
+	 * @param void
+	 * @return void
+	 */	
 	@Test
 	public void testUltimateFetchSpecsFail() {
 		hd3.setUsername("bob");
@@ -829,6 +981,12 @@ public class HD3Test extends TestCase {
 		assertEquals(false, reply);
 	}
 	
+	/**
+	 * Test fetchArchive
+	 *
+	 * @param void
+	 * @return void
+	 */
 	@Test
 	public void testUltimateFetchArchive() {
 		String[] devices = { "Device_10.json", "Extra_546.json", "Device_46142.json", "Extra_9.json",  "Extra_102.json", "user-agent0.json", "user-agent1.json", "user-agentplatform.json", "user-agentbrowser.json", "profile0.json" };
@@ -848,6 +1006,11 @@ public class HD3Test extends TestCase {
 		}
 	}
 	
+	/**
+	 * Test Ultimate mode for API calls
+	 * 
+     * @depends testUltimateFetchArchive
+     */
 	@Test
 	public void testUltimateApiCalls() {
 		this.deviceVendors(true, false);
@@ -857,6 +1020,13 @@ public class HD3Test extends TestCase {
 		this.siteDetect(true, false);
 	}
 	
+	/**
+	 * Compare a device 
+	 *
+	 * @param json1 string
+	 * @param json2 string	 
+	 * @return void
+	 */
 	@Test
 	public void testCompareDevices(JsonObject json1, JsonObject json2) {
 		Iterator<Entry<String, JsonElement>> iterator1 = json1.entrySet().iterator();
@@ -885,7 +1055,15 @@ public class HD3Test extends TestCase {
 		}
 	}
 	
-	
+	/**
+	 * Compare a device 
+	 *
+	 * @param json string
+	 * @param key1 string	 
+	 * @param key2 string
+	 * @param value string
+	 * @return boolean
+	 */
 	@Ignore
 	private boolean jsonArrayToList(JSONObject json, String key1, String key2, String value) throws JSONException {
 		JSONArray jsonArray = (key2 == null) ? (JSONArray) json.get(key1) : 
@@ -898,6 +1076,12 @@ public class HD3Test extends TestCase {
 		return ( Collections.binarySearch(list, value) > -1 ) ? true : false;		
 	}
 	
+	/**
+	 * Compare a device 
+	 *
+	 * @param void	 
+	 * @return json object
+	 */
 	@Ignore
 	private JSONObject getJson() throws JSONException {		
 		return (new JSONObject(hd3.getReply().toString()));

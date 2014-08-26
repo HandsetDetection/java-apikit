@@ -774,7 +774,7 @@ public class HD3 {
 			this.m_reply = (JsonObject) fastReply;			
 			return true;
 		} 					
-		JsonElement id = getDevice();									
+		JsonElement id = getDevice();						
 		if (! HD3Util.isNullElement(id)) {
 			device = getCacheSpecs(id.getAsString(), JsonContants.DEVICE);		
 									
@@ -851,10 +851,10 @@ public class HD3 {
 	 * @param type the type
 	 * @return the cache specs
 	 */
-	private JsonObject getCacheSpecs(String id, String type) {		
+	private JsonObject getCacheSpecs(String id, String type) {				
 		if (HD3Util.isNullOrEmpty(id) || HD3Util.isNullOrEmpty(type)) return null;
 		StringBuilder cacheKey = new StringBuilder();
-		cacheKey.append(type).append("_").append(id); //cacheKey.append(type).append(":").append(id);					
+		cacheKey.append(type).append("_").append(id); //cacheKey.append(type).append(":").append(id);				
 		return getCache(cacheKey.toString());
 	}
 	
@@ -1302,7 +1302,7 @@ public class HD3 {
 				file = fileList[i].getName();				
 				// If the file is in the cache already then grab it form there.		    	
 				if (file.endsWith(".json") && file.startsWith("Device_")) {					// Device:					
-		    		String intValue = file.replaceAll("[a-zA-Z._]", "");					// [a-zA-Z.:]
+		    		String intValue = file.replaceAll("[a-zA-Z._]", "");					// [a-zA-Z.:]		    		
 					data = getCacheSpecs(intValue, "Device");								
 	    			if (data == null || data.isJsonNull() || ! data.isJsonObject()) {
 	    				createErrorReply(299, "Unable to parse Device file : " + file);
@@ -1694,9 +1694,9 @@ public class HD3 {
 			HD3 hd3 = new HD3();
 			
 			hd3.setup(null, "127.0.0.1", "http://localhost");
-			
+
 			if (hd3.deviceVendors()) {
-				g_logger.fine(hd3.getReply().toString());
+				g_logger.fine(hd3.getReply().toString());				
 			} else {
 				g_logger.severe(hd3.getError());
 			}
@@ -1740,7 +1740,7 @@ public class HD3 {
 				g_logger.fine(hd3.getReply().toString());
 			} else {
 				g_logger.severe(hd3.getError());
-			} 
+			}
 			if (hd3.siteFetchTrees()) {
 				g_logger.fine("trees fetched.");
 			} else {
