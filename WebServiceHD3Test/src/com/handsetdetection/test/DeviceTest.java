@@ -10,7 +10,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
+//import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class SitesTest
  */
-@WebServlet("/DeviceTest")
+//@WebServlet("/DeviceTest")
 public class DeviceTest extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -50,13 +50,13 @@ public class DeviceTest extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		response.setContentType("text/html");
-		response.setCharacterEncoding("UTF-8");
+		//response.setCharacterEncoding("UTF-8");
 				
 		PrintWriter out = response.getWriter();
 
 		HD3 hd3 = new HD3();
 		System.out.println(hd3.getUsername());
-/*				
+				
 		out.println("<h1>Test Vendors</h1><code>");		
 		if(hd3.deviceVendors()) {
 			out.println(hd3.getReply().toString());
@@ -87,8 +87,7 @@ public class DeviceTest extends HttpServlet {
 		} else {
 			out.println(hd3.getError());
 		}
-		out.println("</code>"); */
-
+		out.println("</code>");
 		
 		out.close();
 	}
