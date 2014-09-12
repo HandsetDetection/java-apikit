@@ -12,12 +12,40 @@
     <servlet-name>IndexServlet</servlet-name>
     <url-pattern>/index</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <servlet-name>DeviceTest</servlet-name>
     <servlet-class>com.handsetdetection.test.DeviceTest</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>DeviceTest</servlet-name>
-    <url-pattern>/DeviceTest/</url-pattern>
+    <url-pattern>/DeviceTest</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>FetchArchiveTest</servlet-name>
+    <servlet-class>com.handsetdetection.test.FetchArchiveTest</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>FetchArchiveTest</servlet-name>
+    <url-pattern>/FetchArchiveTest</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>LocalTest</servlet-name>
+    <servlet-class>com.handsetdetection.test.LocalTest</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LocalTest</servlet-name>
+    <url-pattern>/LocalTest</url-pattern>
   </servlet-mapping>  
+
+  <servlet>
+    <servlet-name>SiteDetectionTest</servlet-name>
+    <servlet-class>com.handsetdetection.test.SiteDetectionTest</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SiteDetectionTest</servlet-name>
+    <url-pattern>/SiteDetectionTest</url-pattern>
+  </servlet-mapping>
 </web-app>
