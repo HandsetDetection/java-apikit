@@ -6,7 +6,7 @@
   </welcome-file-list>
   <servlet>
     <servlet-name>IndexServlet</servlet-name>
-    <servlet-class>com.handsetdetection.test.IndexServlet</servlet-class>
+    <servlet-class>main.java.container.hd.IndexServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>IndexServlet</servlet-name>
@@ -15,7 +15,7 @@
 
   <servlet>
     <servlet-name>DeviceTest</servlet-name>
-    <servlet-class>com.handsetdetection.test.DeviceTest</servlet-class>
+    <servlet-class>main.java.container.hd.DeviceTest</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>DeviceTest</servlet-name>
@@ -24,7 +24,7 @@
 
   <servlet>
     <servlet-name>FetchArchiveTest</servlet-name>
-    <servlet-class>com.handsetdetection.test.FetchArchiveTest</servlet-class>
+    <servlet-class>main.java.container.hd.FetchArchiveTest</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>FetchArchiveTest</servlet-name>
@@ -33,7 +33,7 @@
 
   <servlet>
     <servlet-name>LocalTest</servlet-name>
-    <servlet-class>com.handsetdetection.test.LocalTest</servlet-class>
+    <servlet-class>main.java.container.hd.LocalTest</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>LocalTest</servlet-name>
@@ -42,7 +42,7 @@
 
   <servlet>
     <servlet-name>SiteDetectionTest</servlet-name>
-    <servlet-class>com.handsetdetection.test.SiteDetectionTest</servlet-class>
+    <servlet-class>main.java.container.hd.SiteDetectionTest</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>SiteDetectionTest</servlet-name>
