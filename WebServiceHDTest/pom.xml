@@ -1,0 +1,75 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.handsetdetection</groupId>
+  <artifactId>WebServiceHDTest</artifactId>
+  <version>4.0.0-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <name>WebServiceHDTest</name>
+  <description>the handset detection servlet entry point</description>
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    <plugins>
+<!--       <plugin>             -->
+<!-- 	    <groupId>org.apache.maven.plugins</groupId> -->
+<!-- 	    <artifactId>maven-war-plugin</artifactId> -->
+<!-- 	    <configuration> -->
+<!-- 	      <webXml>WebContent/WEB-INF/web.xml</webXml>         -->
+<!-- 	    </configuration> -->
+<!-- 	  </plugin> -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+	  <plugin>
+	    <groupId>org.codehaus.mojo</groupId>
+	    <artifactId>versions-maven-plugin</artifactId>
+	    <version>1.2</version>
+	    <configuration>
+	  	  <includesList>com.handsetdetection</includesList>
+	      <generateBackupPoms>true</generateBackupPoms>
+	      <allowSnapshots>true</allowSnapshots>
+	    </configuration>
+	  </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+  	<dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
+      <version>RELEASE</version>
+  	</dependency>
+  	  <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+	</dependency>	
+  	<dependency>
+  		<groupId>org.json</groupId>
+  		<artifactId>json</artifactId>
+  		<version>20140107</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.logging.log4j</groupId>
+  		<artifactId>log4j-core</artifactId>
+  		<version>RELEASE</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.handsetdetection</groupId>
+  		<artifactId>HDlib</artifactId>
+  		<version>4.0.0-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
+</project>
