@@ -81,9 +81,9 @@ public class HDBase
 	
 	protected HDStore store;
 	/** The m_reply. */
-	protected JsonObject reply;
+	protected static JsonObject reply;
 	/** The m_raw reply. */
-	protected byte[] rawReply;
+	protected static byte[] rawReply;
 	/** The m_error. */
 	private String error;
 //	private Config config;							// catalin: is this really of any use ?
@@ -101,18 +101,17 @@ public class HDBase
 		this (configFile);
 	}
 	
-	protected HDBase(InputStream isConfig) throws IOException 
+	protected HDBase(byte[] isConfig) throws IOException 
 	{
-		if (null != isConfig)
-		{
-			Config.init(isConfig);
-			
+		if (null != isConfig) {
+			Config.init(new ByteArrayInputStream(isConfig));
 		} else {
-			
 			throw new InvalidParameterException("No nulls here please");
 		}
 		
+		System.out.println("Config Local Dir : " + Config.getLocalDirectory());
 		bringConfigLocally();
+		System.out.println("HD Local Dir : " + localFilesDirectory);
 		initDetectionConfigMap();
 		initDetectionLanguagesMap();
 	}

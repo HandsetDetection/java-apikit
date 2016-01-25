@@ -1,6 +1,8 @@
 package main.java.container.hd;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 
 import javax.servlet.RequestDispatcher;
@@ -53,10 +55,10 @@ public class DeviceTest extends TestServlet {
 		//response.setCharacterEncoding("UTF-8");
 				
 		PrintWriter out = response.getWriter();
-
-		HD hd = new HD(context.getResourceAsStream("hdapi_config.properties"));
-		System.out.println(hd.getUsername());
-				
+		HD hd = new HD(Utility.getBytesFromIS(context.getResourceAsStream("hdapi_config.properties")));
+		System.out.println("Username : " + hd.getUsername());
+		System.out.println("Local Dir: " + hd.getLocalFilesDirectory());
+		
 		out.println("<h1>Test Vendors</h1><code>");		
 		if(hd.deviceVendors()) {
 			out.println(hd.getReply().toString());

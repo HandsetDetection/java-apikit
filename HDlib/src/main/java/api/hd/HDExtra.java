@@ -44,7 +44,7 @@ public class HDExtra extends HDBase
 			langPatternMap.put(code, Pattern.compile("[; (]" + code + "[; )]", Pattern.CASE_INSENSITIVE));		
 	}
 	
-	public HDExtra(InputStream isCfg) throws IOException
+	public HDExtra(byte[] isCfg) throws IOException
 	{
 		super(isCfg);
 		this.store = HDStore.getInstance();

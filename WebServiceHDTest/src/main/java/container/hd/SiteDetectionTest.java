@@ -52,7 +52,7 @@ public class SiteDetectionTest extends TestServlet {
 
 		PrintWriter out = response.getWriter();
 
-		HD hd = new HD(context.getResourceAsStream("hdapi_config.properties"));
+		HD hd = new HD(Utility.getBytesFromIS(context.getResourceAsStream("hdapi_config.properties")));
 		if (hd.isUseLocal()) {
 			hd.deviceFetchArchive();
 		}

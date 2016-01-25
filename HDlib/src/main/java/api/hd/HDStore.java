@@ -227,6 +227,7 @@ public class HDStore
 		
 		try
 		{
+			System.out.println(this.directory);
 			Files.walkFileTree(Paths.get(this.directory), fv);
 			jsonObj.add("devices", fv.getJsonElem());
 			
@@ -331,6 +332,7 @@ public class HDStore
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) 
 				throws IOException 
 		{
+			System.out.println(file.toString());
 			if (matcher.matches(file)) 
 			{
 				switch (mode)

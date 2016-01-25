@@ -63,7 +63,7 @@ public class HDDevice extends HDBase
 		extra = new HDExtra(cfg);
 	}
 
-	public HDDevice(InputStream isCfg) throws IOException 
+	public HDDevice(byte[] isCfg) throws IOException 
 	{
 		super(isCfg);
 		store = HDStore.getInstance();

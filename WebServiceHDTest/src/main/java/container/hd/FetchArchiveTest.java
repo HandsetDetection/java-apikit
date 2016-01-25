@@ -51,7 +51,7 @@ public class FetchArchiveTest extends TestServlet {
 		//response.setCharacterEncoding("UTF-8");
 		
 		PrintWriter out = response.getWriter();
-		HD hd = new HD(context.getResourceAsStream("hdapi_config.properties"));
+		HD hd = new HD(Utility.getBytesFromIS(context.getResourceAsStream("hdapi_config.properties")));
 		
 		out.println("<h1>Test complete!</h1>");
 		long start = System.currentTimeMillis();	
