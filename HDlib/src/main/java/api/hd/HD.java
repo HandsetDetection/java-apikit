@@ -121,7 +121,7 @@ public class HD extends HDBase {
 		init();
 	}
 	
-	public HD(InputStream isConfig) throws IOException 
+	public HD(byte[] isConfig) throws IOException 
 	{
 		super (isConfig);
 		initVariables();
