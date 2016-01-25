@@ -65,7 +65,7 @@ public class LocalTest extends TestServlet {
 				String profile = string_headers[1];
 				for(int j = 0; j < 10; j++)  {
 					out.println("<tr>");
-					HD hd = new HD(context.getResourceAsStream("/WEB-INF/hdapi_config.properties"));
+					HD hd = new HD(Utility.getBytesFromIS(context.getResourceAsStream("/WEB-INF/hdapi_config.properties")));
 					hd.setup(headers, request.getRemoteAddr(), request.getRequestURI());
 					hd.addDetectVar("user-agent", userAgent);
 					hd.addDetectVar("x-wap-profile", profile);
@@ -116,7 +116,7 @@ public class LocalTest extends TestServlet {
 	
 	private void multipleSameHD3(PrintWriter out, HashMap<String, String> headers, HttpServletRequest request) throws IOException 
 	{
-		HD hd = new HD(context.getResourceAsStream("/WEB-INF/hdapi_config.properties"));
+		HD hd = new HD(Utility.getBytesFromIS(context.getResourceAsStream("/WEB-INF/hdapi_config.properties")));
 		hd.setup(headers, request.getRemoteAddr(), request.getRequestURI());		
 		int totalCount = 0;				
 		out.println("<h1>Multiple Instance</h1>");

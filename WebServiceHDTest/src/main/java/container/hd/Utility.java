@@ -1,6 +1,8 @@
 package main.java.container.hd;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 
@@ -25,5 +27,21 @@ public class Utility {
 			ret.put(key, request.getHeader(key));
 		}
 		return ret;
+	}
+	
+	public static byte[] getBytesFromIS(InputStream is) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		byte[] buffer = new byte[102400];
+		int readed = 0;
+		try {
+			while((readed = is.read(buffer)) != -1) {
+				baos.write(buffer, 0, readed);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return baos.toByteArray();
 	}
 }
