@@ -1,5 +1,6 @@
 package api.hd;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -85,16 +86,18 @@ public class HD extends HDBase {
 		cache = store.getCache();
 		cache.purge();							// a cople of tests will fail if not purging teh static cache
 		setup();
-
+	}
+	
+	public void initVariables() {
 		this.useLocal = Config.isUseLocal();
 		this.siteId = Config.getSiteId();
 		this.mobileSite = Config.getMobileSite();	
 		this.matchFilter = Config.getMatchFilter();
 	}
-	
 	public HD() throws IOException 
 	{
 		super();
+		initVariables();
 		device = new HDDevice();
 		this.patternNonMobile = Pattern.compile(Config.getNonMobile());
 		init();
@@ -103,6 +106,7 @@ public class HD extends HDBase {
 	public HD(String cfgFileName) throws IOException 
 	{
 		super (cfgFileName);
+		initVariables();
 		device = new HDDevice(cfgFileName);
 		this.patternNonMobile = Pattern.compile(Config.getNonMobile());
 		init();
@@ -111,6 +115,7 @@ public class HD extends HDBase {
 	public HD(Config config) throws IOException 
 	{
 		super (config);
+		initVariables();
 		device = new HDDevice(config);
 		this.patternNonMobile = Pattern.compile(Config.getNonMobile());
 		init();
@@ -119,6 +124,7 @@ public class HD extends HDBase {
 	public HD(InputStream isConfig) throws IOException 
 	{
 		super (isConfig);
+		initVariables();
 		device = new HDDevice(isConfig);
 		this.patternNonMobile = Pattern.compile(Config.getNonMobile());
 		init();
