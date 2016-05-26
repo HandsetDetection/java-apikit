@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.handsetdetection</groupId>
-  <artifactId>HDlib</artifactId>
-  <version>4.0.0-SNAPSHOT</version>
+  <artifactId>handsetdetection</artifactId>
+  <version>4.1.1</version>
   <name>HDlib</name>
-  <description>the handset detection jar library</description>
+  <description>The handset detection jar library</description>
   <build>
     <resources>
       <resource>
@@ -73,11 +73,5 @@
 	    <artifactId>json-path</artifactId>
 	    <version>2.0.0</version>
 	</dependency>
-<!-- 	<dependency> -->
-<!-- 	    <groupId>com.jayway.jsonpath</groupId> -->
-<!-- 	    <artifactId>json-path-assert</artifactId> -->
-<!-- 	    <version>2.0.0</version> -->
-<!-- 	    <scope>test</scope> -->
-<!-- 	</dependency> -->
   </dependencies>
 </project>
