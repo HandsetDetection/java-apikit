@@ -1,19 +1,11 @@
 package api.hd;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -23,21 +15,16 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import org.apache.commons.codec.binary.Base64;
-
 import api.hd.HDStore.HDCache;
-
 import com.google.common.io.Files;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
 /* 
 * ****************************************************
 * * The HD3 class
@@ -46,7 +33,6 @@ import com.google.gson.JsonObject;
 * ****************************************************
 */
 public class HD extends HDBase {
-		
 	
 	/** The use local. */
 	private boolean useLocal;
@@ -63,16 +49,12 @@ public class HD extends HDBase {
 	/** The m_detect request. */
 	JsonObject detectRequest;
 	
-	/** The m_specs. */
-	private JsonObject specs;
-	
 	/** The m_cache. */
 	private HDCache cache;
 
 	/** The device. */
 	private final HDDevice device;
 
-	private final Pattern patternNonMobile;
 	private final Pattern patternFastKey = Pattern.compile(" ");
 	
 	private void init() throws IOException
@@ -83,8 +65,9 @@ public class HD extends HDBase {
 			throw new InvalidParameterException("Error : API secret not set. Download a premade config from your Site Settings.");
 		
 		store = HDStore.getInstance();
+		store.setPath(Config.getLocalDirectory(), true);
 		cache = store.getCache();
-		cache.purge();							// a cople of tests will fail if not purging teh static cache
+		cache.purge();							// Tests fail if static cache not purged
 		setup();
 	}
 	
@@ -99,7 +82,6 @@ public class HD extends HDBase {
 		super();
 		initVariables();
 		device = new HDDevice();
-		this.patternNonMobile = Pattern.compile(Config.getNonMobile());
 		init();
 	}
 	
@@ -108,7 +90,6 @@ public class HD extends HDBase {
 		super (cfgFileName);
 		initVariables();
 		device = new HDDevice(cfgFileName);
-		this.patternNonMobile = Pattern.compile(Config.getNonMobile());
 		init();
 	}
 		
@@ -117,7 +98,6 @@ public class HD extends HDBase {
 		super (config);
 		initVariables();
 		device = new HDDevice(config);
-		this.patternNonMobile = Pattern.compile(Config.getNonMobile());
 		init();
 	}
 	
@@ -126,7 +106,6 @@ public class HD extends HDBase {
 		super (isConfig);
 		initVariables();
 		device = new HDDevice(isConfig);
-		this.patternNonMobile = Pattern.compile(Config.getNonMobile());
 		init();
 	}
 
@@ -420,7 +399,7 @@ public class HD extends HDBase {
 		{			
 			fastKeyHeadersJson = gson.toJson(headersMap, new TypeToken<Map <String, String>>() {}.getType());
 			fastKeyHeadersJson = patternFastKey.matcher(fastKeyHeadersJson).replaceAll("");
-			JsonElement jsonElem = cache.read(fastKeyHeadersJson);
+			JsonElement jsonElem = (JsonElement) cache.read(fastKeyHeadersJson);
 			if (!HDUtil.isNullElement(jsonElem))
 			{
 				reply =jsonElem.getAsJsonObject();
@@ -606,103 +585,4 @@ public class HD extends HDBase {
 	 * Reset detect request.
 	 */
 	public void resetDetectRequest() { this.detectRequest = new JsonObject(); }	
-	
-	/**
-	 * 
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Logger topLogger = java.util.logging.Logger.getLogger("");
-		Handler consoleHandler = null;
-		for (Handler handler : topLogger.getHandlers()) {
-			if (handler instanceof ConsoleHandler) {
-				consoleHandler = handler;
-				break;
-			}
-		}
-		if (consoleHandler == null) {
-			consoleHandler = new ConsoleHandler();
-			topLogger.addHandler(consoleHandler);
-		}
-		// set the console handler to fine:
-		consoleHandler.setLevel(java.util.logging.Level.FINEST);
-		g_logger.setLevel(Level.FINEST);
-				
-		try {					
-			FileInputStream fis = new FileInputStream("hdapi_config.properties");
-			Config.init(fis);
-			fis.close();				
-			
-			HD hd3 = new HD();
-			
-			hd3.setup(null, "127.0.0.1", "http://localhost");
-
-			if (hd3.deviceVendors()) {
-				g_logger.fine(hd3.getReply().toString());				
-			} else {
-				g_logger.severe(hd3.getError());
-			}
-			
-			if (hd3.deviceModels("Nokia")) {
-				g_logger.fine(hd3.getReply().toString());
-			} else {
-				g_logger.severe(hd3.getError());
-			}
-
-			if (hd3.deviceView("Nokia", "660")) {
-				g_logger.fine(hd3.getReply().toString());
-			} else {
-				g_logger.severe(hd3.getError());
-			}
-			
-		    if (hd3.deviceWhatHas("general_vendor", "Nokia")) {
-				g_logger.fine(hd3.getReply().toString());
-			} else {
-				g_logger.severe(hd3.getError());
-			}
-	    			
-//			hd3.addDetectVar("user-agent", "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95/12.0.013; Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413");
-//			if (hd3.siteDetect()) {
-//				g_logger.fine(hd3.getReply().toString());
-//			} else {	
-//				g_logger.severe(hd3.getError());
-//			}
-//			
-//			hd3.addDetectVar("user-agent", "Mozilla/5.0 (SymbianOS/9.2; U; Series60/3.1 NokiaN95/12.0.013; Profile/MIDP-2.0 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413");
-//			if (hd3.siteDetect()) {
-//				g_logger.fine(hd3.getReply().toString());
-//			} else {
-//				g_logger.severe(hd3.getError());
-//			}
-//			
-//			hd3.addDetectVar("user-agent", "Opera/9.80 (Android; OperaMini/7.0.29952/28.2144; U; pt) Presto/2.8.119 Version/11.10");
-//			hd3.addDetectVar("x-operamini-phone", "Android #");
-//			hd3.addDetectVar("x-operamini-phone-ua", "Mozilla/5.0 (Linux; U;Android 2.1-update1; pt-br; U20a Build/2.1.1.A.0.6) AppleWebKit/530.17(KHTML, like Gecko) Version/4.0 Mobile Safari/530.17");
-//			if (hd3.siteDetect()) {
-//				g_logger.fine(hd3.getReply().toString());
-//			} else {
-//				g_logger.severe(hd3.getError());
-//			}
-//			if (hd3.siteFetchTrees()) {
-//				g_logger.fine("trees fetched.");
-//			} else {
-//				g_logger.severe(hd3.getError());
-//			}
-//			if (hd3.siteFetchSpecs()) {
-//				g_logger.fine("specs fetched.");
-//			} else {
-//				g_logger.severe(hd3.getError());
-//			}
-//			if (hd3.siteFetchArchive()) {
-//				g_logger.fine("archive fetched.");
-//			} else {
-//				g_logger.severe(hd3.getError());
-//			} 
-		} catch (Exception ie) {
-			ie.printStackTrace();
-			g_logger.severe(ie.getMessage());
-		}	
-	}
-		
 }

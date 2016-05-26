@@ -30,17 +30,11 @@ public class HDDevice extends HDBase
 	private final HDExtra extra;
 	private final HDStore store;
 	private JsonElement device;
-	private JsonElement platform;
-	private JsonElement browser;
-	private JsonElement app;
-	private JsonElement language;
 	private Map<String, String> buildInfo;
 	private SortedSet<RatingEntry> ratingResult;
 	private final Pattern httpHeadersSplitPattern = Pattern.compile("[,;]");
 	private final Pattern httpHeadersReplacePattern = Pattern.compile(" ");
 	private final Gson gson = new Gson();
-	private final Map<String, String> deviceHeaders = new HashMap<String, String>();
-	private final Map<String, String> extraHeaders = new HashMap<String, String>();
 	
 	public HDDevice() throws IOException 
 	{
@@ -323,107 +317,85 @@ public class HDDevice extends HDBase
 	 * @param array $props Properties extracted from the device (display_x, display_y etc .. )
 	 * @return array of rating information. (which includes "score" which is an int value that is a percentage.)
 	 */
-	private Map<String, Integer> findRating(Integer deviceId, Map<String, String> props) 
+	private Map<String, Integer> findRating(String deviceId, Map<String, String> props) 
 	{
 		JsonElement device = findById(deviceId);
 		JsonObject specs = gson.toJsonTree((JsonPath.read(device.toString(), "$." + JsonConstants.DEVICE + "." + JsonConstants.HD_SPECS)), new TypeToken<Map<String, String>>() {}.getType()).getAsJsonObject();
 		if (HDUtil.isNullElement(specs))
 			return null;
 		
-		Integer total = 0;
+		Integer total = 70;
+		Integer score = 0;
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		
 		// Display Resolution - Worth 40 points if correct
+		result.put("resolution", 0);
 		if (!HDUtil.isNullOrEmpty(props.get("display_x")) && !HDUtil.isNullOrEmpty(props.get("display_y")))
 		{
-			total += 40;
-			if (specs.get("display_x").getAsString().equals(props.get("display_x")) 
-					&& specs.get("display_y").getAsString().equals(props.get("display_y")))
+			Integer pMaxRes = Math.max(Integer.parseInt(props.get("display_x")), Integer.parseInt(props.get("display_y")));
+			Integer pMinRes = Math.min(Integer.parseInt(props.get("display_x")), Integer.parseInt(props.get("display_y")));
+			Integer sMaxRes = Math.max(specs.get("display_x").getAsInt(), specs.get("display_y").getAsInt());
+			Integer sMinRes = Math.min(specs.get("display_x").getAsInt(), specs.get("display_y").getAsInt());
+
+			if (pMaxRes.equals(sMaxRes) && pMinRes.equals(sMinRes)) 
 			{
+				// Native resolution
 				result.put("resolution", 40);
-				
-			} else if (specs.get("display_x").getAsString().equals(props.get("display_y")) 
-					&& specs.get("display_y").getAsString().equals(props.get("display_x")))	{
-				
-				result.put("resolution", 40);
-				
-			} else if (specs.get("display_pixel_ratio").getAsFloat() > 1.0) {
-				
-				// The resolution is often scaled by the pixel ratio for apple devices.
-				int adjX = (int) (Integer.parseInt(props.get("display_x")) * specs.get("display_pixel_ratio").getAsFloat());
-				int adjY = (int) (Integer.parseInt(props.get("display_y")) * specs.get("display_pixel_ratio").getAsFloat());
-				
-				if (specs.get("display_x").getAsInt() == adjX && specs.get("display_y").getAsInt() == adjY) 
+				score += 40;
+			} 
+			else 
+			{
+				// Check CSS screen sizes
+				String[] cssScreenSizes = specs.get("display_css_screen_sizes").getAsString().split(",");
+				for(String size : cssScreenSizes)
 				{
-					result.put("resolution", 40);
-					
-				} else if (specs.get("display_x").getAsInt() == adjY && specs.get("display_y").getAsInt() == adjX) {
-					
-					result.put("resolution", 40);
+					String[] res = size.split("x");
+					if (res.length == 2) 
+					{
+						Integer tmpMaxRes = Math.max(Integer.parseInt(res[0]), Integer.parseInt(res[1]));
+						Integer tmpMinRes = Math.min(Integer.parseInt(res[0]), Integer.parseInt(res[1]));
+						if (pMaxRes.equals(tmpMaxRes) && pMinRes.equals(tmpMinRes)) 
+						{
+							result.put("resolution", 40);
+							score += 40;
+							break;
+						}
+					}
 				}
 			}
 		}
 		
-		// Display pixel ratio - also worth 40 points
+		// Display pixel ratio - Worth 20 points
+		result.put("display_pixel_ratio", 0);
 		if (!HDUtil.isNullOrEmpty(props.get("display_pixel_ratio"))) 
 		{	
-			total += 40;
 			// Note : display_pixel_ratio will be a string stored as 1.33 or 1.5 or 2, perhaps 2.0 ..
-			if (Math.abs(specs.get("display_pixel_ratio").getAsFloat() - Float.parseFloat(props.get("display_pixel_ratio"))/100.f) < 0.01f) 
-				result.put("display_pixel_ratio", 40);
-		
+			Float spr = specs.get("display_pixel_ratio").getAsFloat();
+			Float ppr = Float.parseFloat(props.get("display_pixel_ratio"))/100.f;
+			if (spr.equals(ppr)) 
+			{
+				result.put("display_pixel_ratio", 20);
+				score += 20;
+			}
 		}
 		
-		// Benchmark - 20 points - Enough to tie break but not enough to overrule display or pixel ratio.
+		// Benchmark - 10 points - Enough to tie break but not enough to overrule display or pixel ratio.
+		result.put("benchmark", 0);
 		if (!HDUtil.isNullOrEmpty(props.get("benchmark"))) 
 		{
-//			total += 20;
-			total += 10;
 			if (!HDUtil.isNullOrEmpty(specs.get("benchmark_min").getAsString()) && !HDUtil.isNullOrEmpty(specs.get("benchmark_max").getAsString())) 
 			{
 				if (Integer.parseInt(props.get("benchmark")) >= specs.get("benchmark_min").getAsInt() 
 						&& Integer.parseInt(props.get("benchmark")) <= specs.get("benchmark_max").getAsInt())
 				{
-					// Inside range
+					// Inside range - Yay.
 					result.put("benchmark", 10);
-//					result.put("benchmark_span", 10);
-					
-				} else {
-					
-					result.put("benchmark", 0);
-//					// Calculate benchmark chunk spans .. as a tie breaker for close calls.
-//					result.put("benchmark", 0);
-//					int steps = (specs.get("benchmark_max").getAsInt() - specs.get("benchmark_min").getAsInt()) / 10;
-//					
-//					if (0 != steps)
-//					{
-//						// Outside range
-//						if (Integer.parseInt(props.get("benchmark")) >= specs.get("benchmark_max").getAsInt())
-//						{
-//							// Above range : Calculate how many steps above range
-//							int tmp = Math.round((Integer.parseInt(props.get("benchmark")) - specs.get("benchmark_max").getAsInt()) / steps);
-//							result.put("benchmark_span", 10 - (Math.min(10, Math.max(0, tmp))));
-//							
-//						} else if (Integer.parseInt(props.get("benchmark")) <= specs.get("benchmark_min").getAsInt()) {
-//							
-//							// Below range : Calculate how many steps above range
-//							int tmp = Math.round(specs.get("benchmark_min").getAsInt() - Integer.parseInt(props.get("benchmark")) / steps);
-//							result.put("benchmark_span", 10 - (Math.min(10, Math.max(0, tmp))));
-//						}
-//					
-//					} else {
-//						
-//						result.put("benchmark_span", 0);
-//					}
+					score += 10;
 				}
 			}
 		}
 		
-		Integer totalResult = 0;
-		for (Integer aux : result.values())
-			totalResult += aux;
-		
-		result.put("score", total == 0 ? 0 : Math.round(((float)totalResult / total)*100));
+		result.put("score", score);
 		result.put("possible", total);
 		
 		// Distance from mean used in tie breaking situations if two devices have the same score.
@@ -432,97 +404,11 @@ public class HDDevice extends HDBase
 		if (!HDUtil.isNullOrEmpty(specs.get("benchmark_min").getAsString()) && !HDUtil.isNullOrEmpty(specs.get("benchmark_max").getAsString()) 
 				&& !HDUtil.isNullOrEmpty(props.get("benchmark"))) 
 		{
-			result.put("distance", Math.abs((specs.get("benchmark_min").getAsInt() + specs.get("benchmark_max").getAsInt())/2
-					- Integer.parseInt(props.get("benchmark"))));
+			Integer distance = Math.abs((specs.get("benchmark_min").getAsInt() + specs.get("benchmark_max").getAsInt())/2 - Integer.parseInt(props.get("benchmark")));
+			result.put("distance", distance);
 		}
-		
 		return result;
 	}
-
-//	/**											catalin: from old v3
-//	 * Local site detect.
-//	 *
-//	 * @return true, if successful
-//	 */
-//	protected synchronized boolean localSiteDetect() 
-//	{
-//		JsonObject device = null;
-//		JsonObject specs = null;		
-//		HashMap<String, String> headers = HDUtil.parseHeaders(detectRequest);					
-//		Object fastReply = cache.read(headers.toString());		
-//		if (fastReply instanceof JsonObject) {
-//			this.reply = (JsonObject) fastReply;			
-//			return true;
-//		} 					
-//		JsonElement id = getDevice();						
-//		if (! HDUtil.isNullElement(id)) {
-//			device = getCacheSpecs(id.getAsString(), JsonConstants.DEVICE);		
-//									
-//			specs = (JsonObject) HDUtil.get("hd_specs", device);			
-//			
-//			if (specs == null) {
-//				this.createErrorReply(299, "Malformed JSON Object Device:"+ id.toString());
-//				return false;
-//			}			
-//			JsonElement platformId = getExtra(JsonConstants.PLATFORM);
-//			JsonElement browserId = getExtra(JsonConstants.BROWSER);
-//			JsonObject platform = null;
-//			JsonObject browser = null;
-//			String generalPlatform = null;
-//			String generalPlatformVersion = null;
-//			String generalBrowser = null;
-//			String generalBrowserVersion = null;
-//												
-//			if (! HDUtil.isNullElement(platformId)) {
-//				platform = (JsonObject) getCacheSpecs(platformId.getAsString(), JsonConstants.EXTRA);				
-//				generalPlatform = HDUtil.get(JsonConstants.GENERAL_PLATFORM, platform).getAsString();				
-//				if (generalPlatform != null) {
-//					generalPlatformVersion = HDUtil.get(JsonConstants.GENERAL_PLATFORM_VERSION, platform).getAsString();					
-//				}
-//				generalBrowser = HDUtil.get(JsonConstants.GENERAL_BROWSER, platform).getAsString();								
-//				if (generalBrowser != null) {
-//					generalBrowserVersion =HDUtil.get(JsonConstants.GENERAL_BROWSER_VERSION, platform).getAsString();					
-//				}
-//			}			
-//			if (! HDUtil.isNullElement(browserId)) {
-//				browser = getCacheSpecs(browserId.getAsString(), JsonConstants.EXTRA);
-//				generalBrowser = HDUtil.get(JsonConstants.GENERAL_BROWSER, browser).getAsString();
-//				if (generalBrowser != null) {
-//					generalBrowserVersion = HDUtil.get(JsonConstants.GENERAL_BROWSER_VERSION, browser).getAsString();
-//				}
-//			}									
-//	
-//			if (generalPlatform != null) {
-//				specs.addProperty(JsonConstants.GENERAL_PLATFORM, generalPlatform);
-//			}
-//			if (generalPlatformVersion != null) {
-//				specs.addProperty(JsonConstants.GENERAL_PLATFORM_VERSION, generalPlatformVersion);
-//			}
-//			if (generalBrowser != null) {
-//				specs.addProperty(JsonConstants.GENERAL_BROWSER, generalBrowser);
-//			}
-//			if (generalBrowserVersion != null) {
-//				specs.addProperty(JsonConstants.GENERAL_BROWSER_VERSION, generalBrowserVersion);
-//			}
-//			
-//			this.reply = new JsonObject();
-//			
-//			
-//			
-//			this.reply.add("hd_specs", specs);
-//			reply.addProperty(JsonConstants.STATUS, 0);
-//			reply.addProperty(JsonConstants.MESSAGE, "OK");
-//			if (HDUtil.isNullElement(specs.get(JsonConstants.GENERAL_TYPE))) {
-//				reply.addProperty(JsonConstants.CLASS_ATTR, "Unknown");
-//			} else {
-//				reply.addProperty(JsonConstants.CLASS_ATTR, specs.get(JsonConstants.GENERAL_TYPE).getAsString());
-//			}			
-//			cache.write(headers.toString(), this.reply);
-//			return true;
-//		}
-//		this.createErrorReply(301, "Not Found");
-//		return false;
-//	}
 
 	/**
 	 * Overlays specs onto a device
@@ -662,7 +548,7 @@ public class HDDevice extends HDBase
 	 **/
 	private JsonElement matchDevice(Map<String, String> headers) 
 	{
-		JsonElement _id =null;
+		JsonElement _id = null;
 		String agent = "";											// Remember the agent for generic matching later.
 		
 		// Opera mini sometimes puts the vendor # model in the header - nice! ... sometimes it puts ? # ? in as well
@@ -670,7 +556,7 @@ public class HDDevice extends HDBase
 		{
 			_id = getMatch("x-operamini-phone", headers.get("x-operamini-phone"), DETECTIONV4_STANDARD, "x-operamini-phone", JsonConstants.DEVICE);
 			if (null != _id) 
-				return findById(_id.getAsInt());
+				return findById(_id.getAsString());
 			
 			agent = headers.get("x-operamini-phone");
 			headers.remove("x-operamini-phone");
@@ -681,7 +567,7 @@ public class HDDevice extends HDBase
 		{
 			_id = getMatch(JsonConstants.PROFILE, headers.get(JsonConstants.PROFILE), DETECTIONV4_STANDARD, JsonConstants.PROFILE, JsonConstants.DEVICE);
 			if (null != _id) 
-				return findById(_id.getAsInt());
+				return findById(_id.getAsString());
 			
 			headers.remove(JsonConstants.PROFILE);
 		}
@@ -690,7 +576,7 @@ public class HDDevice extends HDBase
 		if (!HDUtil.isNullOrEmpty(headers.get("x-wap-profile"))) {
 			_id = getMatch(JsonConstants.PROFILE, headers.get("x-wap-profile"), DETECTIONV4_STANDARD, "x-wap-profile", JsonConstants.DEVICE);
 			if (null != _id) 
-				return findById(_id.getAsInt());
+				return findById(_id.getAsString());
 			
 			headers.remove("x-wap-profile");
 		}
@@ -710,7 +596,7 @@ public class HDDevice extends HDBase
 				//this.log("Trying user-agent match on header item");
 				_id = getMatch("user-agent", headers.get(item), DETECTIONV4_STANDARD, item, JsonConstants.DEVICE);
 				if (_id != null)
-					return findById(_id.getAsInt());
+					return findById(_id.getAsString());
 			}
 		}
 		
@@ -726,8 +612,7 @@ public class HDDevice extends HDBase
 			_id = getMatch("user-agent", headers.get("user-agent"), DETECTIONV4_GENERIC, "agent", JsonConstants.DEVICE);
 		
 		if (_id != null)
-//		if (!HDUtil.isNullOrEmpty(_id.getAsString()))
-			return findById(_id.getAsInt());
+			return findById(_id.getAsString());
 		
 		return null;
 	}
@@ -742,12 +627,9 @@ public class HDDevice extends HDBase
 	 */
 	private boolean v4MatchBuildInfo(Map<String, String> buildInfo) 
 	{
-		this.platform = null;
-//		this.browser = null;								catalin: these seem not to be used anywhere
-//		this.app = null;
-//		this.detectedRuleKey = null;
-//		this.ratingResult = null;
-		
+		JsonElement device;
+		JsonElement platform;
+				
 		// Nothing to check		
 		if (null == buildInfo || buildInfo.isEmpty())
 			return false;
@@ -755,13 +637,13 @@ public class HDDevice extends HDBase
 		this.buildInfo = buildInfo;
 		
 		// Device Detection
-		this.device = this.v4MatchBIHelper(buildInfo, JsonConstants.DEVICE);
-		if (HDUtil.isNullElement(this.device))
+		device = this.v4MatchBIHelper(buildInfo, JsonConstants.DEVICE);
+		if (HDUtil.isNullElement(device))
 			return false;
 		
 		// Platform Detection
-		this.platform = this.v4MatchBIHelper(buildInfo, "platform");
-		if (!HDUtil.isNullElement(this.platform))
+		platform = this.v4MatchBIHelper(buildInfo, "platform");
+		if (!HDUtil.isNullElement(platform))
 			specsOverlay("platform", device, platform.getAsJsonObject().get("Extra"));
 		
 		this.reply.add("hd_specs", device.getAsJsonObject().get(JsonConstants.DEVICE).getAsJsonObject().get("hd_specs"));
@@ -777,6 +659,8 @@ public class HDDevice extends HDBase
 	 **/
 	private JsonElement v4MatchBIHelper(Map<String, String> buildInfo, String category) 
 	{
+		JsonElement platform;
+		
 		if (HDUtil.isNullOrEmpty(category))
 			category = JsonConstants.DEVICE;
 		category = category.toLowerCase();
@@ -825,7 +709,7 @@ public class HDDevice extends HDBase
 					JsonElement _id = getMatch("buildinfo", value, subtree, "buildinfo", category);
 					
 					if (!HDUtil.isNullElement(_id)) 
-						return (category.equalsIgnoreCase(JsonConstants.DEVICE)) ? findById(_id.getAsInt()) : this.extra.findById(_id.getAsInt());
+						return (category.equalsIgnoreCase(JsonConstants.DEVICE)) ? findById(_id.getAsString()) : this.extra.findById(_id.getAsInt());
 					
 				}
 			}
@@ -843,7 +727,7 @@ public class HDDevice extends HDBase
 				String subtree = (category.equalsIgnoreCase(JsonConstants.DEVICE)) ? DETECTIONV4_GENERIC : category;
 				JsonElement _id = getMatch("buildinfo", value, subtree, "buildinfo", category);
 				if (!HDUtil.isNullElement(_id))
-					return (category.equalsIgnoreCase(JsonConstants.DEVICE)) ? findById(_id.getAsInt()) : this.extra.findById(_id.getAsInt());
+					return (category.equalsIgnoreCase(JsonConstants.DEVICE)) ? findById(_id.getAsString()) : this.extra.findById(_id.getAsInt());
 			}
 		}		
 		return null;
@@ -861,13 +745,17 @@ public class HDDevice extends HDBase
 	 **/
 	private boolean v4MatchHttpHeaders(SortedMap<String, String> headers, String hardwareInfo) 
 	{
-		this.platform = null;
-		this.browser = null;								
-		this.app = null;
-//		this.detectedRuleKey = null;
-//		this.ratingResult = null;
+		JsonElement device = null;
+		JsonElement platform = null;
+		JsonElement browser = null;
+		JsonElement app = null;
+		JsonElement language;
+		Map<String, String> deviceHeaders = new HashMap<String, String>();
+		Map<String, String> extraHeaders = new HashMap<String, String>();
 		Map<String, String> hwProps = null;
-		SortedMap<String, String> tempMap = new TreeMap<String, String>();
+		this.detectedRuleKey = new HashMap<String, String>();
+		this.reply = new JsonObject();
+		this.device = null;
 		
 		// Nothing to check		
 		if (headers.isEmpty())
@@ -890,23 +778,19 @@ public class HDDevice extends HDBase
 				if (!HDUtil.isNullOrEmpty(tmp[0]))
 				{
 					val = tmp[0];
-					tempMap.put(key, val);
 				}
 				else
 					continue;
 			}
 			
-			this.deviceHeaders.put(key.toLowerCase(), cleanStr(val));
-			this.extraHeaders.put(key.toLowerCase(), this.extra.extraCleanStr(val));
+			deviceHeaders.put(key.toLowerCase(), cleanStr(val));
+			extraHeaders.put(key.toLowerCase(), this.extra.extraCleanStr(val));
 		}
+
+		// Match device
+		device = this.matchDevice(deviceHeaders);
 		
-		// avoid ConcurrentMapModification exception
-		headers.remove("content-language");
-		headers.remove("accept-language");
-		headers.putAll(tempMap);
-		
-		this.device = this.matchDevice(this.deviceHeaders);
-		if (HDUtil.isNullElement(this.device))
+		if (HDUtil.isNullElement(device))
 			return this.setError(301, "Not Found");
 		
 		if (!HDUtil.isNullOrEmpty(hardwareInfo))
@@ -914,7 +798,6 @@ public class HDDevice extends HDBase
 		
 		// Stop on detect set - Tidy up and return
 		DocumentContext dcDevice = JsonPath.parse(gson.toJson(device));
-//		Boolean stopOnDetect = dcDevice.read("$." + JsonConstants.DEVICE + "." + "hd_ops" + "." + "stop_on_detect");
 		boolean aux = false;
 		Object stopOnDetect = dcDevice.read("$." + JsonConstants.DEVICE + "." + "hd_ops" + "." + "stop_on_detect");
 		if (stopOnDetect instanceof String)
@@ -922,10 +805,8 @@ public class HDDevice extends HDBase
 		aux = (Integer)stopOnDetect != 0;
 
 		if (aux)
-//		if (null != stopOnDetect && stopOnDetect)
 		{
 			// Check for hardwareInfo overlay
-//			Boolean overlaySpecs = dcDevice.read("$." + JsonConstants.DEVICE + "." + "hd_ops" + "." + "overlay_result_specs");
 			Object overlaySpecs = dcDevice.read("$." + JsonConstants.DEVICE + "." + "hd_ops" + "." + "overlay_result_specs");
 			aux = false;
 			if (overlaySpecs instanceof String) 
@@ -933,7 +814,6 @@ public class HDDevice extends HDBase
 			
 			aux = (Integer)overlaySpecs != 0;
 			if (aux)
-//			if (null != overlaySpecs && overlaySpecs)
 				hardwareInfoOverlay(device, hwProps);
 			
 			reply.add("hd_specs", device.getAsJsonObject().get(JsonConstants.DEVICE).getAsJsonObject().get("hd_specs"));
@@ -941,18 +821,19 @@ public class HDDevice extends HDBase
 		}
 		
 		// Get extra info
-		this.platform = this.extra.matchExtra("platform", this.extraHeaders);
-		this.browser = this.extra.matchExtra("browser", this.extraHeaders);
-		this.app = this.extra.matchExtra("app", this.extraHeaders);
-		this.language = this.extra.matchLanguage(this.extraHeaders);
-//		// Find out if there is any contention on the detected rule.
-		List<Integer> deviceList = getHighAccuracyCandidates();
+		platform = this.extra.matchExtra("platform", extraHeaders);
+		browser = this.extra.matchExtra("browser", extraHeaders);
+		app = this.extra.matchExtra("app", extraHeaders);
+		language = this.extra.matchLanguage(extraHeaders);
+
+		// Find out if there is any contention on the detected rule.
+		List<String> deviceList = getHighAccuracyCandidates();
 		if (null != deviceList && !deviceList.isEmpty()) 
 		{
 			// Resolve contention with OS check
-			this.extra.set(this.platform);
-			List<Integer> pass1List = new ArrayList<Integer>();
-			for (Integer _id : deviceList) 
+			this.extra.set(platform);
+			List<String> pass1List = new ArrayList<String>();
+			for (String _id : deviceList) 
 			{
 				JsonElement tryDevice = this.findById(_id);
 				if (this.extra.verifyPlatform(gson.toJsonTree((JsonPath.read(gson.toJson(tryDevice), "$." + JsonConstants.DEVICE + "." + "hd_specs"))))) 
@@ -965,33 +846,30 @@ public class HDDevice extends HDBase
 			{
 				// Score the list based on hardware
 				Set<RatingEntry> result = new TreeSet<RatingEntry>();
-				for (Integer _id : pass1List)
+				for (String _id : pass1List)
 				{
 					Map<String, Integer> tmp = findRating(_id, hwProps);
 					if (null != tmp && !tmp.isEmpty())
 					{
-						tmp.put("_id", _id);
+						tmp.put("_id", Integer.parseInt(_id));
 						result.add(new RatingEntry(tmp));
 					}
 				}
 				
-				// Sort the results
-//				usort(result, array(this, "hd_sortByScore"));				//catalin: no need, our treeset is built in a sorted manner
-//				this.ratingResult = result;									//catalin: used for anything ?
-				// Take the first one
+				// Use the first result
 				if (result.iterator().hasNext())
 				{
 					int scoreForDevice = result.iterator().next().entry.get("score");
 					if (0 != scoreForDevice) 
 					{
 						int idForDevice = result.iterator().next().entry.get("_id");
-						device = this.findById(idForDevice);
+						JsonElement tmpDevice = findById(String.valueOf(idForDevice));
 						if (!HDUtil.isNullElement(device)) 
-							this.device = device;
+							device = tmpDevice;
 					}
 				}
 			}
-		}
+		}		
 		
 		// Overlay specs
 		if (null != platform)
@@ -1004,13 +882,12 @@ public class HDDevice extends HDBase
 			specsOverlay("language", device, language.getAsJsonObject().get(JsonConstants.EXTRA));
 		
 		// Overlay hardware info result if required
-		if (!HDUtil.isNullElement(gson.toJsonTree((JsonPath.read(gson.toJson(device), "$." + JsonConstants.DEVICE + "." + "hd_ops" + "." + "overlay_result_specs"))))
-			&& !HDUtil.isNullOrEmpty(hardwareInfo))
-		{
-			this.hardwareInfoOverlay(device, hwProps);
+		if (!HDUtil.isNullElement(gson.toJsonTree((JsonPath.read(gson.toJson(device), "$.Device.hd_ops.overlay_result_specs"))))
+			&& !HDUtil.isNullOrEmpty(hardwareInfo)) {
+			hardwareInfoOverlay(device, hwProps);
 		}
 		
-		this.reply.add("hd_specs", gson.toJsonTree((JsonPath.read(gson.toJson(device), "$." + JsonConstants.DEVICE + "." + "hd_specs"))));
+		this.reply.add("hd_specs", gson.toJsonTree((JsonPath.read(gson.toJson(device), "$.Device.hd_specs"))));
 		return setError(0, "OK");
 	}
 	
@@ -1020,15 +897,14 @@ public class HDDevice extends HDBase
 	 * @param void
 	 * @returns array, a list of candidate devices which have this detection rule or false otherwise.
 	 */
-	private List<Integer> getHighAccuracyCandidates() 
+	private List<String> getHighAccuracyCandidates() 
 	{
-		//catalin : judging from the content of hachecks.json, this should return a list of ints, not strings.
 		JsonElement branch = getBranch("hachecks");
 		String ruleKey = detectedRuleKey.get(JsonConstants.DEVICE.toLowerCase());
 		if (!HDUtil.isNullElement((branch.getAsJsonObject().get(ruleKey)))) 
 		{
 			JsonElement elem = branch.getAsJsonObject().get(ruleKey);
-			List<Integer> ret = gson.fromJson(elem, new TypeToken<List<Integer>>() {}.getType());
+			List<String> ret = gson.fromJson(elem, new TypeToken<List<String>>() {}.getType());
 			return ret;
 		}
 		
@@ -1036,23 +912,20 @@ public class HDDevice extends HDBase
 	}
 	
 	/**
-	 * Determines if hd4Helper would provide mor accurate results.
+	 * Determines if hd4Helper would provide more accurate results.
 	 *
 	 * @param array headers HTTP Headers
-	 * @return true if required, false otherwise
+	 * @return boolean true if useful, false otherwise
 	 **/
 	public boolean isHelperUseful(Map<String, String>headers) 
 	{
 		if (headers.isEmpty())
 			return false;
 		
-		headers.remove("ip");
-		headers.remove("host");
-		
 		if (!localDetect(headers))
 			return false;
 		
-		List<Integer> lstCandidates = getHighAccuracyCandidates();
+		List<String> lstCandidates = getHighAccuracyCandidates();
 		if (null == lstCandidates || lstCandidates.isEmpty())
 			return false;
 		

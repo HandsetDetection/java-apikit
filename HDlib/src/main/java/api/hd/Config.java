@@ -94,7 +94,7 @@ public class Config extends Properties{
 	private final Boolean cacheRequests = true;	
 	
 	/** The g_instance. */
-	private static Config g_instance;
+	public static Config g_instance;
 	
 
 	/**
@@ -146,12 +146,12 @@ public class Config extends Properties{
 	/**
 	 * Getter of local files directory setting: local.files.directory . 
 	 * @return the directory where locally stored files are expected to be found (tress, specs JSON files)
-	 *         <code>null</code> is returned if local.files.directory is not configured.
+	 *         java.io.tmpdir is returned if local.files.directory is not configured.
 	 */
 	public static String getLocalDirectory() {
 		String ret = g_instance.getProperty(LOCAL_FILES_DIRECTORY);
 		if (HDUtil.isNullOrEmpty(ret))
-			return Paths.get(".").toAbsolutePath().normalize().toString();
+			return System.getProperty("java.io.tmpdir");
 		
 		return ret;
 	}
