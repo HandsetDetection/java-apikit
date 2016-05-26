@@ -6,14 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
@@ -29,11 +27,8 @@ import com.jayway.jsonpath.JsonPath;
 public class HDTest 
 {	
 	private final Gson gson = new Gson();
-	private FileInputStream fis;
 	private String cloudConfig = "hd4CloudConfig.properties";
 	private String ultimateConfig = "hd4UltimateConfig.properties";
-	private SortedMap<String, String> device;
-
 	private HD hd;
 	private boolean result;
 	private JsonObject reply;	
@@ -88,19 +83,13 @@ public class HDTest
 			"\"display_pixel_ratio\":\"1.0\","+
 			"\"benchmark_min\":0,"+ 
 			"\"benchmark_max\":0,"+
-			"\"general_app_category\":\"\""+
+			"\"general_app_category\":\"\","+
+			"\"general_virtual\":0,"+
+			"\"display_css_screen_sizes\":[\"240x320\"]"+
 			"}";
 
 	@Before
-	public void setUp() {		
-		try {
-//			fis = new FileInputStream("hdapi_config.properties"); 
-//			Config.init(fis);					
-//			fis.close();
-			device = new TreeMap<String, String>();		
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 		
+	public void setUp() {
 	}
 	
 	/**
@@ -120,7 +109,7 @@ public class HDTest
 	 **/
 	@Test
 	public void test_0cloud_1Vendors() throws IOException {
-			hd = new HD(cloudConfig);
+		hd = new HD(cloudConfig);
 		result = hd.deviceVendors();
 		reply = hd.getReply();
 		assertTrue(result);
@@ -136,9 +125,8 @@ public class HDTest
 	 * @group cloud
 	 **/
 	@Test
-	public void test_0cloud_1DeviceModels() throws IOException 
-	{
-			hd = new HD(cloudConfig);
+	public void test_0cloud_1DeviceModels() throws IOException {
+		hd = new HD(cloudConfig);
 		result = hd.deviceModels("Nokia");
 		reply = hd.getReply();
 		assertTrue(result);
@@ -155,7 +143,7 @@ public class HDTest
 	@Test
 	public void test_0cloud_1DeviceView() throws IOException {
 //		thrown.expect(IOException.class);
-			hd = new HD(cloudConfig);
+		hd = new HD(cloudConfig);
 		result = hd.deviceView("Nokia", "N95");
 		reply = hd.getReply();
 		assertTrue(result);
@@ -174,7 +162,7 @@ public class HDTest
 	 **/		
 	@Test
 	public void test_0cloud_1DeviceDeviceWhatHas() throws IOException {
-			hd = new HD(cloudConfig);
+		hd = new HD(cloudConfig);
 		result = hd.deviceWhatHas("design_dimensions", "101 x 44 x 16");
 		reply = hd.getReply();
 		assertTrue(result);
@@ -196,7 +184,7 @@ public class HDTest
 	 **/		
 	@Test
 	public void test_0cloud_1DeviceDetectHTTPDesktop() throws IOException {
-			hd = new HD(cloudConfig);
+		hd = new HD(cloudConfig);
 		Map<String, String>headers = new HashMap<String, String>();
 		headers.put("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36");
 		result = hd.deviceDetect(headers);
@@ -215,7 +203,7 @@ public class HDTest
 	 **/		
 	@Test
 	public void test_0cloud_1DeviceDetectHTTPDesktopJunk() throws IOException {
-			hd = new HD(cloudConfig);
+		hd = new HD(cloudConfig);
 		Map<String, String>headers = new HashMap<String, String>();
 		headers.put("User-Agent", "aksjakdjkjdaiwdidjkjdkawjdijwidawjdiajwdkawdjiwjdiawjdwidjwakdjajdkad" + System.currentTimeMillis());
 		result = hd.deviceDetect(headers);
@@ -233,7 +221,7 @@ public class HDTest
 	 **/
 	@Test
 	public void test_0cloud_1DeviceDetectHTTPWii() throws IOException {
-			hd = new HD(cloudConfig);
+		hd = new HD(cloudConfig);
 		Map<String, String>headers = new HashMap<String, String>();
 		headers.put("User-Agent", "Opera/9.30 (Nintendo Wii; U; ; 2047-7; es-Es)");
 		result = hd.deviceDetect(headers);
@@ -544,6 +532,7 @@ public class HDTest
 		System.out.println("Downloaded " + data.length + " bytes");
 		assertTrue(19000000 < data.length);		// Filesize greater than 19Mb (currently 21Mb).
 	}
+
 	/**
 	 * device vendors test
 	 * @throws IOException 
@@ -593,12 +582,9 @@ public class HDTest
 		assertEquals((Integer)0, (Integer)reply.get("status").getAsInt());
 		assertEquals("OK", (String)reply.get("message").getAsString());
 		String devicesReply = gson.toJson(reply.get("device"));
-//		Collections.sort(devicesReply);
-		
-//		System.out.println(gson.toJson(data["device"], new TypeToken<Map<String, String>>() {}.getType()));
-//		System.out.println(gson.toJson(devices["NokiaN95"], new TypeToken<Map<String, String>>() {}.getType()));
 		assertEquals(nokiaN95.toLowerCase(), devicesReply.toLowerCase());
 	}
+	
 	/**
 	 * device whatHas test
 	 * @throws IOException 
@@ -640,6 +626,7 @@ public class HDTest
 		assertEquals("OK", (String)JsonPath.read(gson.toJson(reply), "$.message"));
 		assertEquals("Computer", (String)JsonPath.read(gson.toJson(reply), "$.hd_specs.general_type"));
 	}
+	
 	/**
 	 * Junk user-agent
 	 * @throws IOException 
@@ -653,11 +640,11 @@ public class HDTest
 		headers.put("User-Agent", "aksjakdjkjdaiwdidjkjdkawjdijwidawjdiajwdkawdjiwjdiawjdwidjwakdjajdkad" + System.currentTimeMillis());
 		result = hd.deviceDetect(headers);
 		reply = hd.getReply();
-		//print_r(reply);
 		assertFalse(result);
 		assertEquals((Integer)301, (Integer)JsonPath.read(gson.toJson(reply), "$.status"));
 		assertEquals("Not Found", (String)JsonPath.read(gson.toJson(reply), "$.message"));
 	}
+	
 	/**
 	 * Wii
 	 * @throws IOException 
@@ -677,6 +664,7 @@ public class HDTest
 		assertEquals("OK", (String)JsonPath.read(gson.toJson(reply), "$.message"));
 		assertEquals("Console", (String)JsonPath.read(gson.toJson(reply), "$.hd_specs.general_type"));
 	}
+	
 	/**
 	 * iPhone
 	 * @throws IOException 
@@ -706,6 +694,7 @@ public class HDTest
 		assertTrue(null != JsonPath.read(gson.toJson(reply), "$.hd_specs.benchmark_min"));
 		assertTrue(null != JsonPath.read(gson.toJson(reply), "$.hd_specs.benchmark_max"));
 	}
+	
 	/**
 	 * iPhone - user-agent in random other header
 	 * @throws IOException 
@@ -736,6 +725,7 @@ public class HDTest
 		assertTrue(null != JsonPath.read(gson.toJson(reply), "$.hd_specs.benchmark_min"));
 		assertTrue(null != JsonPath.read(gson.toJson(reply), "$.hd_specs.benchmark_max"));
 	}
+	
 	/**
 	 * iPhone 3GS (same UA as iPhone 3G, different x-local-hardwareinfo header)
 	 * @throws IOException 
@@ -763,6 +753,7 @@ public class HDTest
 		assertTrue(null != JsonPath.read(gson.toJson(reply), "$.hd_specs.benchmark_min"));
 		assertTrue(null != JsonPath.read(gson.toJson(reply), "$.hd_specs.benchmark_max"));
 	}
+	
 	/**
 	 * iPhone 3G (same UA as iPhone 3GS, different x-local-hardwareinfo header)
 	 * @throws IOException 
@@ -790,6 +781,7 @@ public class HDTest
 		assertTrue(null != JsonPath.read(gson.toJson(reply), "$.hd_specs.benchmark_min"));
 		assertTrue(null != JsonPath.read(gson.toJson(reply), "$.hd_specs.benchmark_max"));
 	}
+	
 	/**
 	 * iPhone - Crazy benchmark (eg from emulated desktop) with outdated OS
 	 * @throws IOException 
@@ -942,6 +934,42 @@ public class HDTest
 		assertEquals((Integer)332, (Integer)JsonPath.read(gson.toJson(reply), "$.hd_specs.display_ppi"));
 	}
 
+	/**
+	 * Browser data lingering between detections
+	 * @throws IOException 
+	 * @depends test_fetchArchive
+	 * @group ultimate
+	 **/
+	@Test
+	public void test_1ultimate_1DeviceDetectHenrysBug() throws IOException {
+		hd = new HD(ultimateConfig);
+		Map<String, String> headers = new HashMap<String, String>();
+			headers.put("user-agent", "Mozilla/5.0(iPhone;CPUiPhoneOS9_2likeMacOSX)AppleWebKit/601.1.46(KHTML,likeGecko)Version/9.0Mobile/13C75Safari/601.1");
+		result = hd.deviceDetect(headers);
+		reply = hd.getReply();
+		
+		assertTrue(result);
+		assertEquals("Apple", (String)JsonPath.read(gson.toJson(reply), "$.hd_specs.general_vendor"));
+		assertEquals("iPhone", (String)JsonPath.read(gson.toJson(reply), "$.hd_specs.general_model"));
+		assertEquals("iOS", (String)JsonPath.read(gson.toJson(reply), "$.hd_specs.general_platform"));
+		assertEquals("9.2", (String)JsonPath.read(gson.toJson(reply), "$.hd_specs.general_platform_version"));
+		assertEquals("Mobile Safari", (String)JsonPath.read(gson.toJson(reply), "$.hd_specs.general_browser"));
+		assertEquals("", (String)JsonPath.read(gson.toJson(reply), "$.hd_specs.general_browser_version"));
+
+		Map<String, String> headers2 = new HashMap<String, String>();
+		headers2.put("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 8_4 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12H143 baiduboxapp/0_0.0.3.7_enohpi_8022_2421/4.8_1C2%257enohPi/1099a/4403CDDAA36A8DC91A1052F8A12AC3C9AD67A224BORGAOILAMT/1 dueriosapp 7.3.0 rv:7.3.0.9 (iPhone; iPhone OS 8.4; zh-Hans_JP)");
+		result = hd.deviceDetect(headers2);
+		reply = hd.getReply();
+		
+		assertTrue(result);
+		assertEquals("Apple", (String)JsonPath.read(gson.toJson(reply), "$.hd_specs.general_vendor"));
+		assertEquals("iPhone", (String)JsonPath.read(gson.toJson(reply), "$.hd_specs.general_model"));
+		assertEquals("iOS", (String)JsonPath.read(gson.toJson(reply), "$.hd_specs.general_platform"));
+		assertEquals("8.4", (String)JsonPath.read(gson.toJson(reply), "$.hd_specs.general_platform_version"));
+		assertEquals("", (String)JsonPath.read(gson.toJson(reply), "$.hd_specs.general_browser"));
+		assertEquals("", (String)JsonPath.read(gson.toJson(reply), "$.hd_specs.general_browser_version"));
+	}	
+	
 	// Remove ultimate edition
 	@Test
 	public void test_1ultimate_2Purge()
@@ -974,6 +1002,7 @@ public class HDTest
 		System.out.println("Downloaded " + data.length + " bytes");
 		assertTrue(9000000 < data.length);		// Filesize greater than 9Mb.
 	}
+
 	/**
 	 * Windows PC running Chrome
 	 * @throws IOException 

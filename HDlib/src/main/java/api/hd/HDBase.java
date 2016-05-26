@@ -50,24 +50,16 @@ public class HDBase
 	
 	private final Pattern deviceUAFilter = Pattern.compile("([ _\\#\\-,./:'\"]+)");
 	private final Pattern extraUAFilter = Pattern.compile("([ ]+)");
-//	private final Pattern commonUAFilter = Pattern.compile("/[^(\u0020-\u007F)]*/");
-	private final Pattern commonUAFilter = Pattern.compile("[^(\u0020-\u007F)]+");
 
-	/** The local files directory. */
 	protected String localFilesDirectory;
-	/** The log server. */
 	private String logServer;
-	/** The API server. */
 	private String apiServer;
-	/** The connect timeout. */
 	private int connectTimeout;
-	/** The read timeout. */
 	private int readTimeout;
-	/** The number of retries. */
 	private int retries;
 	private String realm = "APIv4";
 	private String apiBase = "/apiv4/";
-	private String  apikit = "Java 4.0.0";
+	private String apikit = "Java 4.0.0";
 	private String loggerHost = "logger.handsetdetection.com";
 	private Integer loggerPort = 80;
 	protected String username;		
@@ -81,21 +73,18 @@ public class HDBase
 	
 	protected HDStore store;
 	/** The m_reply. */
-	protected static JsonObject reply;
+	protected JsonObject reply;
 	/** The m_raw reply. */
-	protected static byte[] rawReply;
+	protected byte[] rawReply;
 	/** The m_error. */
 	private String error;
-//	private Config config;							// catalin: is this really of any use ?
 	
 	protected final Map<String, List> detectionConfigMap = new HashMap<String, List>();
 	protected final Map<String, String> detectionLanguagesMap = new HashMap<String, String>();
-//	protected final Pattern xPattern = Pattern.compile("/^x-/i");
 	protected final Pattern xPattern = Pattern.compile("x-", Pattern.CASE_INSENSITIVE);
-	protected final Map<String, String> detectedRuleKey = new HashMap<String, String>();
+	protected Map<String, String> detectedRuleKey = new HashMap<String, String>();
 	private final Map<String, JsonElement> tree = new HashMap<String, JsonElement>();	
 
-	
 	protected HDBase() throws IOException 
 	{
 		this (configFile);
@@ -486,7 +475,8 @@ public class HDBase
 		if (HDUtil.isNullOrEmpty(value) || value.length() < 4) 
 			return null;
 
-		JsonElement branch = getBranch(actualHeader);		
+		JsonElement branch = getBranch(actualHeader);
+		
 		if (HDUtil.isNullElement(branch)) 
 			return null;
 		
@@ -736,12 +726,9 @@ public class HDBase
 	 * @param string str
 	 * @return string Cleansed string
 	 **/
-	protected String extraCleanStr(String str) 
-	{
+	protected String extraCleanStr(String str) {
 		str = str.toLowerCase();
-		str = extraUAFilter.matcher(str).replaceAll("");
-		str = commonUAFilter.matcher(str).replaceAll("");
-		
+		str = extraUAFilter.matcher(str).replaceAll("");		
 		return str.trim();
 	}
 	
@@ -751,12 +738,9 @@ public class HDBase
 	 * @param string str
 	 * @return string Cleansed string
 	 **/
-	protected String cleanStr(String str) 
-	{
+	protected String cleanStr(String str) {
 		str = str.toLowerCase();
-		str = deviceUAFilter.matcher(str).replaceAll("");
-		str = commonUAFilter.matcher(str).replaceAll("");
-		
+		str = deviceUAFilter.matcher(str).replaceAll("");		
 		return str.trim();
 	}
 	
@@ -869,14 +853,12 @@ public class HDBase
 	 * @param string $branch The name of the branch to find
 	 * @return an assoc array on success, false otherwise.
 	 */
-	protected JsonElement getBranch(String branch) 
-	{
-		if (!HDUtil.isNullElement(this.tree.get(branch)))
+	protected JsonElement getBranch(String branch) {
+		if (! HDUtil.isNullElement(this.tree.get(branch)))
 			return this.tree.get(branch);
 		
 		JsonElement tmp = this.store.read(branch);
-		if (null != tmp)
-		{
+		if (! HDUtil.isNullElement(tmp)) {
 			this.tree.put(branch, tmp);
 			return tmp;
 		}
@@ -928,9 +910,14 @@ public class HDBase
 	 * @param string $_id
 	 * @return array device on success, false otherwise
 	 **/
-	protected JsonElement findById(Integer deviceId) 
+	protected JsonElement findById(String deviceId) 
 	{
-		return this.store.read("Device_" + String.valueOf(deviceId));
+		JsonElement e = this.store.read("Device_" + deviceId);
+		if (HDUtil.isNullElement(e))
+			return null;
+		// Return a copy of this object, not the object itself.
+		Gson gson = new Gson(); 
+		return gson.fromJson(gson.toJson(e, JsonElement.class), JsonElement.class);
 	}
 	
 	/**

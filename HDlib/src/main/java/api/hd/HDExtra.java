@@ -1,7 +1,6 @@
 package api.hd;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,49 +86,7 @@ public class HDExtra extends HDBase
 		}
 		return null;
 	}
-//									catalin: from v3
-//	/**
-//	 * Gets the extra.
-//	 *
-//	 * @param classKey the class key
-//	 * @return the extra
-//	 */
-//	synchronized JsonElement getExtra(String classKey) {
-//		HashMap<String, String> headers = HDUtil.parseHeaders(detectRequest);
-//		ArrayList<String> checkOrder = new ArrayList<String>();
-//		if (JsonContants.PLATFORM.equals(classKey)) {
-//			checkOrder.add("x-operamini-phone-ua");
-//			checkOrder.add(JsonContants.USER_AGENT);
-//			checkOrder.addAll(headers.keySet());
-//		} else if (JsonContants.BROWSER.equals(classKey)) {
-//			checkOrder.add("agent");
-//			checkOrder.addAll(headers.keySet());
-//		}
-//		for (String field : checkOrder) {
-//			if (!HDUtil.isNullOrEmpty(headers.get(field)) 
-//					&& (JsonContants.USER_AGENT.equals(field) || field.indexOf("x-") >=0)){
-//				JsonElement id = matchExtra(JsonContants.USER_AGENT, headers.get(field),classKey);
-//				return id;
-//			}
-//		}
-//		return null;
-//	}
-//	
-//	/**
-//	 * Match extra.
-//	 *
-//	 * @param header the header
-//	 * @param value the value
-//	 * @param classKey the class key
-//	 * @return the json element
-//	 */
-//	private synchronized JsonElement matchExtra(String header ,String value, String classKey) 
-//	{
-//		value = value.toLowerCase().replaceAll(" ", "");
-//		String treeTag = header + classKey;
-//		return match(header, value, treeTag);
-//	}
-//		
+
 	/**
 	 * Can learn language from language header or agent
 	 *
@@ -243,6 +200,21 @@ public class HDExtra extends HDBase
 	}
 	
 	/**
+	 * Helper for determining if a string is a number
+	 * 
+	 * @param string input
+	 * @return true on success, false otherwise
+	 **/
+	private boolean isInteger(String input) {
+		try {
+			Integer.parseInt( input );
+		    return true;
+		} catch(Exception ex) {
+			return false;
+		}
+	}
+	
+	/**
 	 * Breaks a version number apart into its Major, minor and point release numbers for comparison.
 	 *
 	 * Big Assumption : That version numbers separate their release bits by "." !!!
@@ -251,14 +223,9 @@ public class HDExtra extends HDBase
 	 * @param string $versionNumber
 	 * @return array of ("major" => x, "minor" => y and "point" => z) on success, null otherwise
 	 **/
-	JsonElement breakVersionApart(String versionNumber) 
-	{
+	public String[] breakVersionApart(String versionNumber) {
 		String tmp[] = (versionNumber + ".0.0.0").split("\\.", 4);
-		JsonObject reply = new JsonObject();
-		reply.addProperty("major", !HDUtil.isNullOrEmpty(tmp[0]) ? tmp[0] : "0");
-		reply.addProperty("minor", !HDUtil.isNullOrEmpty(tmp[1]) ? tmp[1] : "0");
-		reply.addProperty("point", !HDUtil.isNullOrEmpty(tmp[2]) ? tmp[2] : "0");
-		return reply;
+		return tmp;
 	}
 	
 	/**
@@ -268,14 +235,10 @@ public class HDExtra extends HDBase
 	 * @param string $b Generally a number, but might be a string
 	 * @return int
 	 **/
-	private int compareSmartly(Object a, Object b) 
-	{
-		if (a instanceof Integer && b instanceof Integer) 
-			return (Integer)a - (Integer)b;
-		
-		String aa = (String) a;
-		String bb = (String) b;
-		return aa.compareTo(bb);
+	public int compareSmartly(String a, String b) {
+		if (isInteger(a) && isInteger(b)) 
+			return Integer.parseInt(a) - Integer.parseInt(b);
+		return a.compareTo(b);
 	}
 	
 	/**
@@ -285,16 +248,15 @@ public class HDExtra extends HDBase
 	 * @param string $vb Version B
 	 * @return < 0 if a < b, 0 if a == b and > 0 if a > b : Also returns 0 if data is absent from either.
 	 */
-	private int comparePlatformVersions(String va, String vb) 
-	{
+	public int comparePlatformVersions(String va, String vb) {
 		if (HDUtil.isNullOrEmpty(va) || HDUtil.isNullOrEmpty(vb))
 			return 0;
 		
-		JsonObject versionA = breakVersionApart(va).getAsJsonObject();
-		JsonObject versionB = breakVersionApart(vb).getAsJsonObject();
-		Integer major = compareSmartly(versionA.get("major").getAsInt(), versionB.get("major").getAsInt());
-		Integer minor = compareSmartly(versionA.get("minor").getAsInt(), versionB.get("minor").getAsInt());
-		Integer point = compareSmartly(versionA.get("point").getAsInt(), versionB.get("point").getAsInt());
+		String[] versionA = breakVersionApart(va);
+		String[] versionB = breakVersionApart(vb);
+		Integer major = compareSmartly(versionA[0], versionB[0]);
+		Integer minor = compareSmartly(versionA[1], versionB[1]);
+		Integer point = compareSmartly(versionA[2], versionB[2]);
 		
 		if (0 != major) 
 			return major;
@@ -312,8 +274,7 @@ public class HDExtra extends HDBase
 	 * @param string $_id
 	 * @return array device on success, false otherwise
 	 **/
-	protected JsonElement findById(Integer deviceId) 
-	{
+	protected JsonElement findById(Integer deviceId) {
 		return this.store.read("Extra_" + String.valueOf(deviceId));
 	}
 }
